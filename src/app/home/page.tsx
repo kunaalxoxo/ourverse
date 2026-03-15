@@ -11,38 +11,55 @@ import AffirmationCarousel from '@/components/AffirmationCarousel';
 import Navbar from '@/components/Navbar';
 import CouponCard from '@/components/CouponCard';
 import AddCouponModal from '@/components/AddCouponModal';
-import { ExternalLink, Plus, Heart } from 'lucide-react';
+import MarqueeStrip from '@/components/MarqueeStrip';
+import CursorGlow from '@/components/CursorGlow';
+import { ArrowUpRight, Plus } from 'lucide-react';
 
 const PROJECTS = [
   {
-    url:    'https://oneyear-black.vercel.app/',
-    title:  'One Year',
-    desc:   'A year of love, captured in pixels.',
-    color:  'rgba(255,179,198,0.10)',
+    url:   'https://oneyear-black.vercel.app/',
+    index: '01',
+    title: 'One Year',
+    desc:  'A year of love, captured in pixels.',
+    tag:   'Anniversary',
   },
   {
-    url:    'https://ily-phi-liard.vercel.app/',
-    title:  'I Love You',
-    desc:   'Three words, infinite meaning.',
-    color:  'rgba(234,220,248,0.10)',
+    url:   'https://ily-phi-liard.vercel.app/',
+    index: '02',
+    title: 'I Love You',
+    desc:  'Three words, infinite meaning.',
+    tag:   'Feeling',
   },
 ];
 
-/* Reusable scroll-reveal props */
-function reveal(delay = 0, yOffset = 24) {
+function reveal(delay = 0, yOffset = 32) {
   return {
     initial: { opacity: 0, y: yOffset },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: '-56px' },
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const, delay },
+    transition: { duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] as const, delay },
   };
+}
+
+/* Animated section line */
+function SectionLine() {
+  return (
+    <motion.div
+      initial={{ scaleX: 0, opacity: 0 }}
+      whileInView={{ scaleX: 1, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+      style={{ originX: 0.5 }}
+      className="section-line"
+    />
+  );
 }
 
 export default function HomePage() {
   const router = useRouter();
-  const [user, setUser]     = useState<{ displayName: string; username: string; partner: string } | null>(null);
+  const [user, setUser] = useState<{ displayName: string; username: string; partner: string } | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [modal, setModal]   = useState(false);
+  const [modal, setModal] = useState(false);
 
   const load = () => {
     const u = getStoredUser();
@@ -54,203 +71,237 @@ export default function HomePage() {
   useEffect(() => { load(); }, []);
   if (!user) return null;
 
+  /* Hero word stagger */
+  const heroWords = ['Our', 'Verse'];
+
   return (
     <div className="relative min-h-screen">
+      <CursorGlow />
       <ParticleCanvas />
       <BloomBackground />
       <Navbar />
 
-      {/* ─── HERO ───────────────────────────────── */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 pt-16 pb-24">
+      {/* ─── HERO ─────────────────────────────────────── */}
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-32 overflow-hidden">
+
         {/* Eyebrow */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.7 }}
+          className="flex items-center gap-3 mb-12"
+        >
+          <div className="eyebrow-line" />
+          <span className="label tracking-[0.28em]">Since 18 November 2024</span>
+          <div className="eyebrow-line" />
+        </motion.div>
+
+        {/* Giant editorial title */}
+        <div className="hero-title-wrap">
+          {heroWords.map((word, wi) => (
+            <div key={word} className={`hero-word-row ${wi === 1 ? 'hero-word-row--right' : 'hero-word-row--left'}`}>
+              {word.split('').map((char, ci) => (
+                <motion.span
+                  key={ci}
+                  className="hero-char"
+                  initial={{ opacity: 0, y: 60, rotateX: -40 }}
+                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                  transition={{
+                    delay: 0.4 + wi * 0.18 + ci * 0.055,
+                    duration: 0.7,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Timer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.7 }}
-          className="flex items-center gap-2 mb-9"
+          transition={{ delay: 1.1, duration: 0.8 }}
+          className="mt-14"
         >
-          <div className="section-divider" style={{ width: 20 }} />
-          <span className="label">Since 18 November 2024</span>
-          <div className="section-divider" style={{ width: 20 }} />
+          <RelationshipTimer />
         </motion.div>
 
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="font-display font-medium text-center text-white/90 mb-11"
-          style={{ fontSize: 'clamp(48px, 10vw, 78px)', letterSpacing: '-0.025em', lineHeight: 1.05 }}
-        >
-          Our Verse
-        </motion.h1>
-
-        {/* Timer */}
-        <RelationshipTimer />
-
         {/* Affirmation */}
-        <div className="mt-10">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.35, duration: 0.8 }}
+          className="mt-8"
+        >
           <AffirmationCarousel />
-        </div>
+        </motion.div>
 
         {/* Scroll cue */}
         <motion.div
-          animate={{ y: [0, 5, 0], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ y: [0, 6, 0], opacity: [0.25, 0.55, 0.25] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute bottom-10 flex flex-col items-center gap-2"
         >
-          <span className="label" style={{ letterSpacing: '0.25em' }}>scroll</span>
-          <motion.div
-            animate={{ scaleY: [1, 0.5, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-px h-7 origin-top"
-            style={{ background: 'linear-gradient(to bottom, rgba(255,179,198,0.25), transparent)' }}
-          />
+          <span className="label" style={{ letterSpacing: '0.3em' }}>scroll</span>
+          <div className="scroll-line" />
         </motion.div>
       </section>
 
-      {/* ─── COUPONS ───────────────────────────── */}
-      <section className="relative z-10 py-28 px-6">
+      {/* ─── MARQUEE 1 ──────────────────────────────── */}
+      <div className="relative z-10">
+        <MarqueeStrip />
+      </div>
+
+      {/* ─── COUPONS ─────────────────────────────────── */}
+      <section className="relative z-10 py-32 px-6">
         <div className="max-w-3xl mx-auto">
 
-          <motion.div {...reveal()} className="text-center mb-16">
-            <span className="label">Waiting for you</span>
-            <h2
-              className="font-display font-medium mt-3 text-white/85"
-              style={{ fontSize: 'clamp(30px, 6vw, 44px)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
-            >
-              Your Coupons
-            </h2>
+          <motion.div {...reveal()} className="mb-18">
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <span className="label mb-3 block">Waiting for you</span>
+                <h2 className="section-heading">Your Coupons</h2>
+              </div>
+              <span className="section-index">02</span>
+            </div>
+            <SectionLine />
           </motion.div>
 
           {coupons.length === 0 ? (
-            <motion.div {...reveal(0.1)} className="text-center py-14">
-              <p style={{ color: 'var(--text-faint)', fontSize: 13 }}>
-                Nothing here yet — but good things are coming.
-              </p>
-            </motion.div>
+            <motion.p {...reveal(0.1)} className="text-center py-16" style={{ color: 'var(--text-faint)', fontSize: 13 }}>
+              Nothing here yet — but good things are coming.
+            </motion.p>
           ) : (
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-40px' }}
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.08 } },
-              }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-12"
             >
-              {coupons.map(c => (
+              {coupons.map((c, i) => (
                 <motion.div
                   key={c.id}
-                  variants={{
-                    hidden:   { opacity: 0, y: 22 },
-                    visible:  { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
-                  }}
+                  variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] } } }}
+                  className="relative"
                 >
+                  <span className="coupon-index">{String(i + 1).padStart(2, '0')}</span>
                   <CouponCard coupon={c} onUpdate={load} />
                 </motion.div>
               ))}
             </motion.div>
           )}
 
-          {/* CTA */}
-          <motion.div {...reveal(0.12)} className="flex justify-center mt-12">
+          <motion.div {...reveal(0.1)} className="flex justify-center mt-14">
             <motion.button
-              whileHover={{ scale: 1.04, y: -1 }}
+              whileHover={{ scale: 1.04, y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setModal(true)}
               className="btn-ghost"
             >
-              <Plus size={14} /> Create a coupon for them
+              <Plus size={13} /> Create a coupon for them
             </motion.button>
           </motion.div>
         </div>
       </section>
 
-      {/* ─── DIVIDER ────────────────────────────── */}
-      <div className="section-divider" />
+      {/* ─── MARQUEE 2 (reversed) ───────────────────── */}
+      <div className="relative z-10">
+        <MarqueeStrip inverted />
+      </div>
 
-      {/* ─── CREATIONS ─────────────────────────── */}
-      <section className="relative z-10 py-28 px-6">
-        <div className="max-w-2xl mx-auto">
+      {/* ─── CREATIONS ──────────────────────────────── */}
+      <section className="relative z-10 py-32 px-6">
+        <div className="max-w-3xl mx-auto">
 
-          <motion.div {...reveal()} className="text-center mb-16">
-            <p className="font-serif-light text-[14px] mb-3" style={{ color: 'var(--text-muted)' }}>
-              Some little things I built before you.
-            </p>
-            <h2
-              className="font-display font-medium text-white/82"
-              style={{ fontSize: 'clamp(26px, 5vw, 38px)', letterSpacing: '-0.02em', lineHeight: 1.15 }}
-            >
-              Made with you in mind
-            </h2>
+          <motion.div {...reveal()} className="mb-18">
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <span className="label mb-3 block">Built before you knew</span>
+                <h2 className="section-heading">Made with<br />you in mind</h2>
+              </div>
+              <span className="section-index">03</span>
+            </div>
+            <SectionLine />
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-5">
+          {/* Full-width horizontal project cards — TIWIS style */}
+          <div className="flex flex-col gap-0 mt-12">
             {PROJECTS.map((proj, i) => (
               <motion.a
                 key={proj.url}
                 href={proj.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                {...reveal(i * 0.1)}
-                whileHover={{ scale: 1.03, y: -4 }}
-                whileTap={{ scale: 0.99 }}
-                className="card card-interactive block group p-6 relative overflow-hidden"
+                {...reveal(i * 0.12)}
+                className="project-row group"
               >
-                {/* Glow on hover */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ background: `radial-gradient(circle at 50% 0%, ${proj.color} 0%, transparent 70%)` }}
-                />
+                {/* Index */}
+                <span className="project-row-index">{proj.index}</span>
 
-                {/* Preview */}
-                <div
-                  className="w-full h-28 rounded-xl mb-5 flex items-center justify-center relative z-10"
-                  style={{ background: proj.color }}
-                >
-                  <Heart size={24}
-                    className="text-white/20 fill-white/10 group-hover:text-white/38 transition-colors duration-400" />
-                </div>
-
-                <div className="flex items-start justify-between relative z-10">
-                  <div>
-                    <h3 className="font-display text-[16px] font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-                      {proj.title}
-                    </h3>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{proj.desc}</p>
+                {/* Content */}
+                <div className="project-row-body">
+                  <div className="flex items-center gap-3 mb-1">
+                    <h3 className="project-row-title">{proj.title}</h3>
+                    <span className="pill pill-pink">{proj.tag}</span>
                   </div>
-                  <ExternalLink size={13}
-                    className="text-white/18 group-hover:text-white/50 mt-0.5 flex-shrink-0 transition-colors duration-300" />
+                  <p className="project-row-desc">{proj.desc}</p>
                 </div>
+
+                {/* Arrow */}
+                <motion.div
+                  className="project-row-arrow"
+                  whileHover={{ rotate: 45 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <ArrowUpRight size={18} />
+                </motion.div>
               </motion.a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── FOOTER ──────────────────────────────── */}
-      <footer className="relative z-10 py-20 text-center px-6 border-t border-white/[0.035]">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-        >
-          <div className="section-divider mb-9" />
-          <p className="font-serif-light text-[16px] md:text-[18px] max-w-xs mx-auto leading-relaxed"
-            style={{ color: 'var(--text-faint)' }}>
-            Some stories aren’t written in books —<br />they’re written in moments together.
-          </p>
-          <p className="label mt-7">Our Verse · {new Date().getFullYear()}</p>
-        </motion.div>
+      {/* ─── FOOTER ──────────────────────────────────── */}
+      <footer className="relative z-10 py-24 px-6">
+        <div className="max-w-3xl mx-auto">
+          <SectionLine />
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, delay: 0.2 }}
+            className="pt-16 flex flex-col md:flex-row items-start md:items-end justify-between gap-10"
+          >
+            <div>
+              <p
+                className="font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.1] max-w-xs"
+                style={{ color: 'rgba(240,232,244,0.75)', letterSpacing: '-0.02em' }}
+              >
+                Some stories aren&apos;t written in books —
+              </p>
+              <p
+                className="font-serif-light text-[clamp(22px,4vw,34px)] mt-2"
+                style={{ color: 'rgba(240,232,244,0.35)' }}
+              >
+                they&apos;re written in moments together.
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="label mb-2">Our Verse</p>
+              <p className="label" style={{ color: 'var(--text-faint)' }}>{new Date().getFullYear()}</p>
+            </div>
+          </motion.div>
+        </div>
       </footer>
 
-      {/* Modal */}
       {modal && (
         <AddCouponModal
-          from={user.username} to={user.partner}
+          from={user.username}
+          to={user.partner}
           onClose={() => setModal(false)}
           onCreated={load}
         />
