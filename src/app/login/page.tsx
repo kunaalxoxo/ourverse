@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimate } from 'framer-motion';
 import { login, storeUser, getStoredUser } from '@/lib/auth';
 import BloomBackground from '@/components/BloomBackground';
 import ParticleCanvas from '@/components/ParticleCanvas';
@@ -14,9 +14,15 @@ export default function LoginPage() {
   const [show, setShow] = useState(false);
   const [err, setErr]   = useState('');
   const [busy, setBusy] = useState(false);
-  const [shake, setShake] = useState(false);
+
+  // useAnimate gives us imperative control — no invalid custom props needed
+  const [formRef, animate] = useAnimate();
 
   useEffect(() => { if (getStoredUser()) router.replace('/home'); }, [router]);
+
+  const shakeForm = async () => {
+    await animate(formRef.current, { x: [-7, 7, -5, 5, -2, 2, 0] }, { duration: 0.42, ease: 'easeOut' });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,9 +31,9 @@ export default function LoginPage() {
     const user = login(u, p);
     if (user) { storeUser(user); router.push('/home'); }
     else {
-      setErr('Hmm, that doesn\'t seem right.');
-      setShake(true); setTimeout(() => setShake(false), 480);
+      setErr("Hmm, that doesn't seem right.");
       setBusy(false);
+      shakeForm();
     }
   };
 
@@ -44,18 +50,22 @@ export default function LoginPage() {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="text-center mb-10"
         >
-          <h1 className="font-display text-[36px] font-medium tracking-tight"
-            style={{ color: 'rgba(240,232,244,0.88)', letterSpacing: '-0.025em', lineHeight: 1 }}>
+          <h1
+            className="font-display text-[36px] font-medium tracking-tight"
+            style={{ color: 'rgba(240,232,244,0.88)', letterSpacing: '-0.025em', lineHeight: 1 }}
+          >
             Our Verse
           </h1>
-          <p style={{ fontSize: 12.5, color: 'var(--text-faint)', marginTop: 8 }}>a private little universe</p>
+          <p style={{ fontSize: 12.5, color: 'var(--text-faint)', marginTop: 8 }}>
+            a private little universe
+          </p>
         </motion.div>
 
-        {/* Card */}
+        {/* Card — ref from useAnimate, plain motion.form with valid props only */}
         <motion.form
+          ref={formRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          animate2={shake ? { x: [-7, 7, -5, 5, -2, 2, 0] } : undefined}
           transition={{ duration: 0.55, ease: 'easeOut', delay: 0.08 }}
           onSubmit={submit}
           className="surface rounded-2xl p-7 space-y-4"
@@ -65,8 +75,12 @@ export default function LoginPage() {
           <div>
             <label className="label block mb-1.5">Username</label>
             <input
-              value={u} onChange={e => setU(e.target.value)}
-              placeholder="who are you?" className="px-4 py-3" required autoComplete="off"
+              value={u}
+              onChange={e => setU(e.target.value)}
+              placeholder="who are you?"
+              className="px-4 py-3"
+              required
+              autoComplete="off"
             />
           </div>
 
@@ -76,12 +90,15 @@ export default function LoginPage() {
             <div className="relative">
               <input
                 type={show ? 'text' : 'password'}
-                value={p} onChange={e => setP(e.target.value)}
+                value={p}
+                onChange={e => setP(e.target.value)}
                 placeholder="your little secret"
                 className="px-4 py-3 pr-10"
                 required
               />
-              <button type="button" onClick={() => setShow(!show)}
+              <button
+                type="button"
+                onClick={() => setShow(!show)}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200"
                 style={{ color: 'var(--text-faint)' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted)')}
@@ -96,7 +113,9 @@ export default function LoginPage() {
           <AnimatePresence>
             {err && (
               <motion.p
-                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
                 style={{ fontSize: 12, color: 'rgba(255,179,198,0.65)', textAlign: 'center' }}
               >
                 {err}
@@ -107,7 +126,8 @@ export default function LoginPage() {
           {/* Submit */}
           <motion.button
             whileTap={{ scale: 0.98 }}
-            type="submit" disabled={busy}
+            type="submit"
+            disabled={busy}
             className="btn-primary w-full mt-1"
           >
             {busy ? 'Opening…' : 'Enter our world'}
