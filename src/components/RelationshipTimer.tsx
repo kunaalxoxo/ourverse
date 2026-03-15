@@ -2,59 +2,63 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const START_DATE = new Date('2024-11-18T00:00:00');
+const START = new Date('2024-11-18T00:00:00');
 
-function getTimeDiff() {
-  const now = new Date();
-  const diff = now.getTime() - START_DATE.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-  return { days, hours, minutes, seconds };
+function diff() {
+  const ms = Date.now() - START.getTime();
+  return {
+    days:    Math.floor(ms / 86400000),
+    hours:   Math.floor((ms % 86400000) / 3600000),
+    minutes: Math.floor((ms % 3600000) / 60000),
+    seconds: Math.floor((ms % 60000) / 1000),
+  };
 }
 
 export default function RelationshipTimer() {
-  const [time, setTime] = useState(getTimeDiff());
-
-  useEffect(() => {
-    const interval = setInterval(() => setTime(getTimeDiff()), 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const [t, setT] = useState(diff);
+  useEffect(() => { const id = setInterval(() => setT(diff()), 1000); return () => clearInterval(id); }, []);
 
   const units = [
-    { label: 'Days', value: time.days },
-    { label: 'Hours', value: time.hours },
-    { label: 'Minutes', value: time.minutes },
-    { label: 'Seconds', value: time.seconds },
+    { label: 'days', value: t.days },
+    { label: 'hours', value: t.hours },
+    { label: 'mins', value: t.minutes },
+    { label: 'secs', value: t.seconds },
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-      {units.map((unit, i) => (
+    <div className="flex justify-center gap-3 md:gap-6">
+      {units.map((u, i) => (
         <motion.div
-          key={unit.label}
-          initial={{ opacity: 0, y: 30 }}
+          key={u.label}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 + i * 0.1, duration: 0.6 }}
-          className="glass-card rounded-2xl px-6 py-5 text-center min-w-[90px]"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            boxShadow: '0 0 20px rgba(244,114,182,0.08)',
-          }}
+          transition={{ delay: 0.5 + i * 0.08, duration: 0.6 }}
+          className="flex flex-col items-center"
         >
-          <motion.div
-            key={unit.value}
-            initial={{ scale: 1.3, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="font-display text-4xl md:text-5xl font-light text-white glow-text"
+          {/* Number */}
+          <div
+            className="relative flex items-center justify-center rounded-2xl"
+            style={{
+              width: 72, height: 68,
+              background: '#1A1A22',
+              border: '1px solid rgba(255,179,198,0.10)',
+              boxShadow: '0 0 24px rgba(255,179,198,0.05)',
+            }}
           >
-            {String(unit.value).padStart(2, '0')}
-          </motion.div>
-          <div className="text-xs text-pink-300/60 mt-1 uppercase tracking-widest font-medium">
-            {unit.label}
+            <motion.span
+              key={u.value}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="font-display text-3xl font-medium text-white"
+              style={{ letterSpacing: '-0.02em' }}
+            >
+              {String(u.value).padStart(2, '0')}
+            </motion.span>
           </div>
+          <span className="mt-2 text-[10px] uppercase tracking-[0.18em] text-white/25 font-medium">
+            {u.label}
+          </span>
         </motion.div>
       ))}
     </div>

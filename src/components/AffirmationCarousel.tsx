@@ -2,41 +2,36 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const AFFIRMATIONS = [
-  'Every day with you feels like magic ✨',
-  'Our little universe 🌙',
-  'Still falling for you 💗',
-  'Built on love and silly moments',
-  'Two people, one story 💫',
-  '1 year full of joy',
-  'You are my favorite adventure 🌸',
-  'In every version of the universe, I choose you',
-  'Home is wherever you are 🏡',
-  'My favorite hello and my hardest goodbye',
+const LINES = [
+  'One more day with you.',
+  'Our little universe.',
+  'Built on laughter.',
+  'Still choosing you.',
+  'A story still being written.',
+  'Every moment, a favourite.',
+  'Home is wherever you are.',
+  'In every version, you.',
 ];
 
 export default function AffirmationCarousel() {
-  const [index, setIndex] = useState(0);
-
+  const [i, setI] = useState(0);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % AFFIRMATIONS.length);
-    }, 3500);
-    return () => clearInterval(interval);
+    const id = setInterval(() => setI(p => (p + 1) % LINES.length), 3800);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <div className="h-12 flex items-center justify-center overflow-hidden">
+    <div className="h-9 flex items-center justify-center overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.p
-          key={index}
-          initial={{ opacity: 0, y: 20 }}
+          key={i}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="font-script text-2xl md:text-3xl text-pink-200/80 text-center px-4"
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="font-serif-light text-lg md:text-xl text-white/45 text-center select-none"
         >
-          {AFFIRMATIONS[index]}
+          {LINES[i]}
         </motion.p>
       </AnimatePresence>
     </div>

@@ -2,187 +2,208 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Dancing+Script:wght@500;600&display=swap');
 
-:root {
-  --foreground-rgb: 255, 245, 248;
-  --background-start-rgb: 5, 2, 10;
-  --background-end-rgb: 15, 5, 25;
-}
-
-* {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    135deg,
-    rgb(var(--background-start-rgb)) 0%,
-    #0d0520 30%,
-    #120520 60%,
-    rgb(var(--background-end-rgb)) 100%
-  );
-  min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  background-color: #0F0F12;
+  color: #F0E8F4;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
+/* ─── Typography ─────────────────────────────── */
 .font-display {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
 }
 
 .font-script {
   font-family: 'Dancing Script', cursive;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
+.font-serif-light {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  font-style: italic;
 }
-::-webkit-scrollbar-track {
-  background: #0d0520;
-}
+
+/* ─── Scrollbar ──────────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #0F0F12; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #f472b6, #a855f7);
+  background: linear-gradient(to bottom, #FFB3C6, #EADCF8);
   border-radius: 10px;
 }
 
-/* Glow text effect */
-.glow-text {
-  text-shadow: 0 0 20px rgba(244, 114, 182, 0.6), 0 0 40px rgba(244, 114, 182, 0.3);
+/* ─── Surfaces ───────────────────────────────── */
+.surface {
+  background: #1A1A22;
+  border: 1px solid rgba(255, 179, 198, 0.08);
 }
 
-.glow-text-purple {
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(168, 85, 247, 0.3);
+.surface-raised {
+  background: #1E1E28;
+  border: 1px solid rgba(255, 179, 198, 0.10);
 }
 
-/* Glass morphism */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(26, 26, 34, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 179, 198, 0.07);
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(244, 114, 182, 0.15);
+/* ─── Glow helpers ───────────────────────────── */
+.glow-pink {
+  text-shadow: 0 0 30px rgba(255, 179, 198, 0.4);
 }
 
-/* Bloom orb */
-.bloom-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
+.glow-subtle {
+  box-shadow: 0 0 40px rgba(255, 179, 198, 0.06);
 }
 
-/* Particle canvas */
+.ring-glow {
+  box-shadow: 0 0 0 1px rgba(255,179,198,0.12), 0 0 30px rgba(255,179,198,0.06);
+}
+
+/* ─── Inputs ─────────────────────────────────── */
+input,
+textarea,
+select {
+  background: #1A1A22 !important;
+  border: 1px solid rgba(255, 179, 198, 0.12) !important;
+  color: #F0E8F4 !important;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(255, 179, 198, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(255, 179, 198, 0.06) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(240, 232, 244, 0.22) !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) hue-rotate(300deg) opacity(0.5);
+  cursor: pointer;
+}
+
+/* ─── Particle canvas ────────────────────────── */
 #particle-canvas {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Smooth transitions */
-.page-transition {
-  animation: fadeIn 0.5s ease-out;
+/* ─── Coupon card ────────────────────────────── */
+.coupon-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.coupon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(255, 179, 198, 0.10);
+  border-color: rgba(255, 179, 198, 0.20) !important;
 }
 
-/* Input styling */
-input, textarea, select {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(244, 114, 182, 0.2) !important;
-  color: white !important;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none !important;
-  border-color: rgba(244, 114, 182, 0.6) !important;
-  box-shadow: 0 0 20px rgba(244, 114, 182, 0.15) !important;
-}
-
-input::placeholder, textarea::placeholder {
-  color: rgba(255, 255, 255, 0.3) !important;
-}
-
-/* Toggle switch */
-.toggle-container {
-  position: relative;
-  width: 80px;
-  height: 40px;
-}
-
-.toggle-input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-
+/* ─── Toggle switch ──────────────────────────── */
+.toggle-container { position: relative; width: 52px; height: 28px; }
+.toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
 .toggle-slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 40px;
-  transition: 0.4s;
-  border: 1px solid rgba(244, 114, 182, 0.3);
+  inset: 0;
+  background: #1A1A22;
+  border-radius: 28px;
+  transition: 0.3s;
+  border: 1px solid rgba(255,179,198,0.2);
 }
-
-.toggle-slider:before {
-  position: absolute;
+.toggle-slider::before {
   content: '';
-  height: 30px;
-  width: 30px;
-  left: 4px;
-  bottom: 4px;
-  background: white;
+  position: absolute;
+  height: 20px; width: 20px;
+  left: 3px; bottom: 3px;
+  background: rgba(255,179,198,0.5);
   border-radius: 50%;
-  transition: 0.4s;
-  box-shadow: 0 0 10px rgba(244, 114, 182, 0.5);
+  transition: 0.3s;
 }
-
 .toggle-input:checked + .toggle-slider {
-  background: linear-gradient(135deg, #f472b6, #a855f7);
-  box-shadow: 0 0 20px rgba(244, 114, 182, 0.4);
+  background: linear-gradient(135deg, #FFB3C6 0%, #EADCF8 100%);
+}
+.toggle-input:checked + .toggle-slider::before {
+  transform: translateX(24px);
+  background: #0F0F12;
 }
 
-.toggle-input:checked + .toggle-slider:before {
-  transform: translateX(40px);
+/* ─── Page fade ──────────────────────────────── */
+.page-enter {
+  animation: pageFadeIn 0.5s ease forwards;
 }
 
-/* Card hover glow */
-.coupon-card:hover {
-  box-shadow: 0 0 30px rgba(244, 114, 182, 0.2), 0 0 60px rgba(168, 85, 247, 0.1);
-  border-color: rgba(244, 114, 182, 0.4) !important;
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Confetti overlay */
-#confetti-canvas {
+/* ─── Modal backdrop ─────────────────────────── */
+.modal-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  background: rgba(10, 10, 14, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* ─── Heart float ────────────────────────────── */
+@keyframes heartFloat {
+  0%   { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-120px) scale(0.5); opacity: 0; }
+}
+
+.heart-float {
+  animation: heartFloat 1.4s ease-out forwards;
+  position: fixed;
   pointer-events: none;
   z-index: 9999;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* ─── Section divider ────────────────────────── */
+.section-divider {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,179,198,0.4), transparent);
+  margin: 0 auto;
 }

@@ -4,126 +4,112 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getStoredUser, logout } from '@/lib/auth';
-import { Heart, Home, Gift, PlusCircle, LogOut, Menu, X } from 'lucide-react';
+import { Heart, Menu, X, LogOut } from 'lucide-react';
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<{ displayName: string; emoji: string } | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<{ displayName: string } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
+  useEffect(() => { setUser(getStoredUser()); }, [pathname]);
   useEffect(() => {
-    setUser(getStoredUser());
-  }, [pathname]);
-
-  const handleLogout = () => {
-    logout();
-    router.push('/');
-  };
-
-  const links = [
-    { href: '/home', label: 'Home', icon: <Home size={16} /> },
-    { href: '/coupons', label: 'Coupons', icon: <Gift size={16} /> },
-    { href: '/add-coupon', label: 'Add Coupon', icon: <PlusCircle size={16} /> },
-  ];
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
 
   if (!user) return null;
 
+  const links = [
+    { href: '/home', label: 'Home' },
+    { href: '/coupons', label: 'Coupons' },
+  ];
+
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
+    <motion.header
+      initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? 'glass border-b border-white/5' : 'bg-transparent'
+      }`}
     >
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/home" className="flex items-center gap-2 group">
-          <motion.div
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+        <Link href="/home" className="flex items-center gap-2.5 group">
+          <motion.span
+            animate={{ scale: [1, 1.18, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Heart size={20} className="text-pink-400 fill-pink-400" />
-          </motion.div>
-          <span className="font-script text-xl text-pink-300 group-hover:text-pink-200 transition-colors">
-            Ourverse
+            <Heart size={15} className="text-[#FFB3C6] fill-[#FFB3C6]" />
+          </motion.span>
+          <span className="font-display text-[15px] tracking-wide text-white/80 group-hover:text-white transition-colors">
+            Our Verse
           </span>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          {links.map(l => (
             <Link
               key={l.href}
               href={l.href}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
+              className={`px-4 py-1.5 rounded-full text-[13px] transition-all duration-300 ${
                 pathname === l.href
-                  ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
-                  : 'text-white/60 hover:text-white/90 hover:bg-white/5'
+                  ? 'text-[#FFB3C6] bg-[#FFB3C6]/10'
+                  : 'text-white/40 hover:text-white/70'
               }`}
             >
-              {l.icon}
               {l.label}
             </Link>
           ))}
-        </div>
-
-        {/* User + Logout */}
-        <div className="hidden md:flex items-center gap-3">
-          <span className="text-sm text-white/50">
-            {user.emoji} {user.displayName}
-          </span>
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-white/40 hover:text-white/70 hover:bg-white/5 transition-all"
+            onClick={() => { logout(); router.push('/'); }}
+            className="ml-2 p-2 text-white/20 hover:text-white/50 transition-colors rounded-full"
           >
-            <LogOut size={14} /> Logout
+            <LogOut size={14} />
           </button>
-        </div>
+        </nav>
 
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-white/60 hover:text-white"
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+        {/* Mobile */}
+        <button onClick={() => setOpen(!open)} className="md:hidden text-white/40">
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {mobileOpen && (
+        {open && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden border-t border-white/5 glass"
+            className="md:hidden glass border-t border-white/5 overflow-hidden"
           >
-            <div className="px-6 py-4 flex flex-col gap-2">
-              {links.map((l) => (
+            <div className="px-6 py-4 flex flex-col gap-1">
+              {links.map(l => (
                 <Link
                   key={l.href}
                   href={l.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm transition-all ${
-                    pathname === l.href
-                      ? 'bg-pink-500/20 text-pink-300'
-                      : 'text-white/60 hover:text-white/80'
+                  onClick={() => setOpen(false)}
+                  className={`px-4 py-3 rounded-xl text-sm ${
+                    pathname === l.href ? 'text-[#FFB3C6]' : 'text-white/40'
                   }`}
                 >
-                  {l.icon} {l.label}
+                  {l.label}
                 </Link>
               ))}
               <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-3 text-sm text-white/40 hover:text-white/70"
+                onClick={() => { logout(); router.push('/'); }}
+                className="px-4 py-3 text-left text-sm text-white/25"
               >
-                <LogOut size={16} /> Logout ({user.displayName})
+                Sign out
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </motion.header>
   );
 }
