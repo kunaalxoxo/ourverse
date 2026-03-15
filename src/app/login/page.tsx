@@ -9,10 +9,10 @@ import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [u, setU] = useState('');
-  const [p, setP] = useState('');
+  const [u, setU]       = useState('');
+  const [p, setP]       = useState('');
   const [show, setShow] = useState(false);
-  const [err, setErr] = useState('');
+  const [err, setErr]   = useState('');
   const [busy, setBusy] = useState(false);
   const [shake, setShake] = useState(false);
 
@@ -21,12 +21,12 @@ export default function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true); setErr('');
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 420));
     const user = login(u, p);
     if (user) { storeUser(user); router.push('/home'); }
     else {
       setErr('Hmm, that doesn\'t seem right.');
-      setShake(true); setTimeout(() => setShake(false), 500);
+      setShake(true); setTimeout(() => setShake(false), 480);
       setBusy(false);
     }
   };
@@ -36,81 +36,93 @@ export default function LoginPage() {
       <ParticleCanvas />
       <BloomBackground />
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-        className="relative z-10 w-full max-w-[360px]"
-      >
+      <div className="relative z-10 w-full max-w-[340px]">
         {/* Wordmark */}
-        <div className="text-center mb-10">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="font-display text-[34px] font-medium text-white/90 tracking-tight"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="text-center mb-10"
+        >
+          <h1 className="font-display text-[36px] font-medium tracking-tight"
+            style={{ color: 'rgba(240,232,244,0.88)', letterSpacing: '-0.025em', lineHeight: 1 }}>
             Our Verse
-          </motion.p>
-          <p className="text-[13px] text-white/25 mt-1 font-light">a private little universe</p>
-        </div>
+          </h1>
+          <p style={{ fontSize: 12.5, color: 'var(--text-faint)', marginTop: 8 }}>a private little universe</p>
+        </motion.div>
 
+        {/* Card */}
         <motion.form
-          animate={shake ? { x: [-8, 8, -6, 6, -2, 2, 0] } : {}}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          animate2={shake ? { x: [-7, 7, -5, 5, -2, 2, 0] } : undefined}
+          transition={{ duration: 0.55, ease: 'easeOut', delay: 0.08 }}
           onSubmit={submit}
           className="surface rounded-2xl p-7 space-y-4"
-          style={{ boxShadow: '0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,179,198,0.06)' }}
+          style={{ boxShadow: '0 24px 72px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,179,198,0.05)' }}
         >
+          {/* Username */}
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.18em] text-white/25 mb-1.5">Username</label>
+            <label className="label block mb-1.5">Username</label>
             <input
               value={u} onChange={e => setU(e.target.value)}
-              placeholder="who are you?" className="w-full px-4 py-3" required autoComplete="off"
+              placeholder="who are you?" className="px-4 py-3" required autoComplete="off"
             />
           </div>
+
+          {/* Password */}
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.18em] text-white/25 mb-1.5">Password</label>
+            <label className="label block mb-1.5">Password</label>
             <div className="relative">
               <input
                 type={show ? 'text' : 'password'}
                 value={p} onChange={e => setP(e.target.value)}
-                placeholder="your little secret" className="w-full px-4 py-3 pr-10" required
+                placeholder="your little secret"
+                className="px-4 py-3 pr-10"
+                required
               />
               <button type="button" onClick={() => setShow(!show)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50">
-                {show ? <EyeOff size={15} /> : <Eye size={15} />}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200"
+                style={{ color: 'var(--text-faint)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}
+              >
+                {show ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
             </div>
           </div>
 
+          {/* Error */}
           <AnimatePresence>
             {err && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="text-[12px] text-[#FFB3C6]/70 text-center">
+              <motion.p
+                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                style={{ fontSize: 12, color: 'rgba(255,179,198,0.65)', textAlign: 'center' }}
+              >
                 {err}
               </motion.p>
             )}
           </AnimatePresence>
 
+          {/* Submit */}
           <motion.button
             whileTap={{ scale: 0.98 }}
             type="submit" disabled={busy}
-            className="w-full py-3 rounded-xl text-[13px] font-medium mt-1"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,179,198,0.85), rgba(234,220,248,0.85))',
-              color: '#0F0F12',
-              boxShadow: '0 0 30px rgba(255,179,198,0.12)',
-            }}
+            className="btn-primary w-full mt-1"
           >
             {busy ? 'Opening…' : 'Enter our world'}
           </motion.button>
         </motion.form>
 
-        <p className="text-center text-[11px] text-white/15 mt-6">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 24 }}
+        >
           Just the two of us in here 🔒
-        </p>
-      </motion.div>
+        </motion.p>
+      </div>
     </main>
   );
 }

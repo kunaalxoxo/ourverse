@@ -14,52 +14,61 @@ function diff() {
   };
 }
 
+function Digit({ value, label, delay }: { value: number; label: string; delay: number }) {
+  const str = String(value).padStart(2, '0');
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.55, ease: 'easeOut' }}
+      className="flex flex-col items-center"
+    >
+      <div
+        className="relative overflow-hidden rounded-xl flex items-center justify-center"
+        style={{
+          width: 68, height: 64,
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+        }}
+      >
+        {/* Subtle inner glow top */}
+        <div
+          className="absolute inset-x-0 top-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,179,198,0.2), transparent)' }}
+        />
+
+        <motion.span
+          key={str}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="font-display text-[28px] font-medium text-white/88"
+          style={{ letterSpacing: '-0.03em', lineHeight: 1 }}
+        >
+          {str}
+        </motion.span>
+      </div>
+      <span className="label mt-2.5">{label}</span>
+    </motion.div>
+  );
+}
+
 export default function RelationshipTimer() {
   const [t, setT] = useState(diff);
   useEffect(() => { const id = setInterval(() => setT(diff()), 1000); return () => clearInterval(id); }, []);
 
   const units = [
-    { label: 'days', value: t.days },
+    { label: 'days',  value: t.days },
     { label: 'hours', value: t.hours },
-    { label: 'mins', value: t.minutes },
-    { label: 'secs', value: t.seconds },
+    { label: 'mins',  value: t.minutes },
+    { label: 'secs',  value: t.seconds },
   ];
 
   return (
-    <div className="flex justify-center gap-3 md:gap-6">
+    <div className="flex items-end gap-3 md:gap-5 justify-center">
       {units.map((u, i) => (
-        <motion.div
-          key={u.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 + i * 0.08, duration: 0.6 }}
-          className="flex flex-col items-center"
-        >
-          {/* Number */}
-          <div
-            className="relative flex items-center justify-center rounded-2xl"
-            style={{
-              width: 72, height: 68,
-              background: '#1A1A22',
-              border: '1px solid rgba(255,179,198,0.10)',
-              boxShadow: '0 0 24px rgba(255,179,198,0.05)',
-            }}
-          >
-            <motion.span
-              key={u.value}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="font-display text-3xl font-medium text-white"
-              style={{ letterSpacing: '-0.02em' }}
-            >
-              {String(u.value).padStart(2, '0')}
-            </motion.span>
-          </div>
-          <span className="mt-2 text-[10px] uppercase tracking-[0.18em] text-white/25 font-medium">
-            {u.label}
-          </span>
-        </motion.div>
+        <Digit key={u.label} value={u.value} label={u.label} delay={0.45 + i * 0.08} />
       ))}
     </div>
   );
