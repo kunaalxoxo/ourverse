@@ -10,8 +10,8 @@ function boom() {
     particleCount: 90,
     spread: 70,
     origin: { y: 0.5 },
-    /* Indigo Dream palette */
-    colors: ['#B08FE8', '#F4956A', '#d4b8f5', '#fbc49a', '#e0d4ff'],
+    /* Obsidian Warm palette */
+    colors: ['#E8D5B0', '#C49A6C', '#f0e4cc', '#d4b48a', '#fff8ee'],
     zIndex: 9999,
   });
 }
@@ -39,39 +39,27 @@ export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpd
 
       {coupon.imageUrl && (
         <div className="w-full h-36 overflow-hidden relative">
-          <img
-            src={coupon.imageUrl} alt={coupon.name}
-            className="w-full h-full object-cover opacity-70"
-            style={{ transition: 'opacity 0.3s ease' }}
-          />
-          <div className="absolute inset-x-0 bottom-0 h-8"
-            style={{ background: 'linear-gradient(to top, var(--surface), transparent)' }} />
+          <img src={coupon.imageUrl} alt={coupon.name} className="w-full h-full object-cover opacity-70" style={{ transition: 'opacity 0.3s ease' }} />
+          <div className="absolute inset-x-0 bottom-0 h-8" style={{ background: 'linear-gradient(to top, var(--surface), transparent)' }} />
         </div>
       )}
 
       <div className="p-5 flex flex-col flex-1 relative z-10">
         <div className="flex items-center justify-between mb-3">
           <span className="label">Coupon</span>
-          {used && (
-            <span className="pill pill-green"><CheckCircle2 size={9} /> Redeemed</span>
-          )}
-          {expired && !used && (
-            <span className="pill pill-amber"><Clock3 size={9} /> Expired</span>
-          )}
+          {used && <span className="pill pill-green"><CheckCircle2 size={9} /> Redeemed</span>}
+          {expired && !used && <span className="pill pill-amber"><Clock3 size={9} /> Expired</span>}
         </div>
 
-        <h3 className="font-display text-[17px] font-medium leading-snug mb-2"
-          style={{ color: 'var(--text-primary)' }}>
+        <h3 className="font-display text-[17px] font-medium leading-snug mb-2" style={{ color: 'var(--text-primary)' }}>
           {coupon.name}
         </h3>
-        <p className="text-[13px] leading-relaxed flex-1"
-          style={{ color: 'var(--text-muted)' }}>
+        <p className="text-[13px] leading-relaxed flex-1" style={{ color: 'var(--text-muted)' }}>
           {coupon.description}
         </p>
 
         {coupon.deadline && (
-          <div className="flex items-center gap-1.5 mt-4"
-            style={{ color: 'var(--text-faint)', fontSize: '11px' }}>
+          <div className="flex items-center gap-1.5 mt-4" style={{ color: 'var(--text-faint)', fontSize: '11px' }}>
             <Calendar size={10} />
             Until {new Date(coupon.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
           </div>
@@ -80,8 +68,7 @@ export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpd
         {!used && !expired && (
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={redeem}
-            disabled={busy}
+            onClick={redeem} disabled={busy}
             className="btn-ghost mt-4 w-full justify-center"
             style={{ borderRadius: '10px' }}
           >

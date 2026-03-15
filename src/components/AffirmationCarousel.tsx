@@ -30,7 +30,7 @@ export default function AffirmationCarousel() {
           exit={{    opacity: 0, y: -10 }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
           className="font-serif-light text-center"
-          style={{ fontSize: 'clamp(13px, 2vw, 15px)', color: 'rgba(176,143,232,0.55)', position: 'absolute', width: '100%' }}
+          style={{ fontSize: 'clamp(13px, 2vw, 15px)', color: 'rgba(232,213,176,0.45)', position: 'absolute', width: '100%' }}
         >
           {AFFIRMATIONS[idx]}
         </motion.p>

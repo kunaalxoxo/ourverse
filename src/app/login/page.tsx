@@ -28,11 +28,7 @@ export default function LoginPage() {
     await new Promise(r => setTimeout(r, 420));
     const user = login(u, p);
     if (user) { storeUser(user); router.push('/home'); }
-    else {
-      setErr("Hmm, that doesn\u2019t seem right.");
-      setBusy(false);
-      shakeForm();
-    }
+    else { setErr("Hmm, that doesn\u2019t seem right."); setBusy(false); shakeForm(); }
   };
 
   return (
@@ -41,20 +37,17 @@ export default function LoginPage() {
       <BloomBackground />
 
       <div className="relative z-10 w-full max-w-[340px]">
-
-        {/* Wordmark */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, ease: 'easeOut' }}
           className="text-center mb-10"
         >
-          {/* Gradient title matching hero */}
           <h1
             className="font-display text-[38px] font-medium"
             style={{
               letterSpacing: '-0.03em', lineHeight: 1,
-              background: 'linear-gradient(135deg, rgba(230,235,255,0.92) 0%, rgba(176,143,232,0.85) 60%, rgba(244,149,106,0.70) 100%)',
+              background: 'linear-gradient(135deg, rgba(255,250,242,0.92) 0%, rgba(232,213,176,0.80) 55%, rgba(196,154,108,0.65) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -67,7 +60,6 @@ export default function LoginPage() {
           </p>
         </motion.div>
 
-        {/* Form card */}
         <motion.form
           ref={formRef}
           initial={{ opacity: 0, y: 20 }}
@@ -75,32 +67,17 @@ export default function LoginPage() {
           transition={{ duration: 0.55, ease: 'easeOut', delay: 0.1 }}
           onSubmit={submit}
           className="surface rounded-2xl p-7 space-y-4"
-          style={{
-            boxShadow: '0 24px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(176,143,232,0.07)',
-          }}
+          style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.50), 0 0 0 1px rgba(232,213,176,0.06)' }}
         >
           <div>
             <label className="label block mb-1.5">Username</label>
-            <input
-              value={u} onChange={e => setU(e.target.value)}
-              placeholder="who are you?"
-              className="px-4 py-3" required autoComplete="off"
-            />
+            <input value={u} onChange={e => setU(e.target.value)} placeholder="who are you?" className="px-4 py-3" required autoComplete="off" />
           </div>
-
           <div>
             <label className="label block mb-1.5">Password</label>
             <div className="relative">
-              <input
-                type={show ? 'text' : 'password'}
-                value={p} onChange={e => setP(e.target.value)}
-                placeholder="your little secret"
-                className="px-4 py-3 pr-10" required
-              />
-              <button
-                type="button" onClick={() => setShow(!show)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200"
-                style={{ color: 'var(--text-faint)' }}
+              <input type={show ? 'text' : 'password'} value={p} onChange={e => setP(e.target.value)} placeholder="your little secret" className="px-4 py-3 pr-10" required />
+              <button type="button" onClick={() => setShow(!show)} className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200" style={{ color: 'var(--text-faint)' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}
               >
@@ -111,29 +88,20 @@ export default function LoginPage() {
 
           <AnimatePresence>
             {err && (
-              <motion.p
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                style={{ fontSize: 12, color: 'rgba(176,143,232,0.70)', textAlign: 'center' }}
+              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                style={{ fontSize: 12, color: 'rgba(232,213,176,0.60)', textAlign: 'center' }}
               >
                 {err}
               </motion.p>
             )}
           </AnimatePresence>
 
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            type="submit" disabled={busy}
-            className="btn-primary w-full mt-1"
-          >
+          <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={busy} className="btn-primary w-full mt-1">
             {busy ? 'Opening…' : 'Enter our world'}
           </motion.button>
         </motion.form>
 
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 0.55 }}
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
           style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 24 }}
         >
           Just the two of us in here 🔒

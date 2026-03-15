@@ -25,21 +25,16 @@ function Digit({ value, label, delay }: { value: number; label: string; delay: n
     >
       <div
         className="relative overflow-hidden rounded-xl flex items-center justify-center"
-        style={{
-          width: 68, height: 64,
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-        }}
+        style={{ width: 68, height: 64, background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
-        {/* Indigo Dream: violet top glow line */}
+        {/* Warm cream top glow line */}
         <div
           className="absolute inset-x-0 top-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(176,143,232,0.28), transparent)' }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(232,213,176,0.22), transparent)' }}
         />
-        {/* Subtle inner bottom shadow */}
         <div
           className="absolute inset-x-0 bottom-0 h-4"
-          style={{ background: 'linear-gradient(to top, rgba(4,5,14,0.35), transparent)' }}
+          style={{ background: 'linear-gradient(to top, rgba(10,9,8,0.35), transparent)' }}
         />
         <motion.span
           key={str}
@@ -47,10 +42,7 @@ function Digit({ value, label, delay }: { value: number; label: string; delay: n
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.22, ease: 'easeOut' }}
           className="font-display text-[28px] font-medium"
-          style={{
-            letterSpacing: '-0.03em', lineHeight: 1,
-            color: 'rgba(230,235,255,0.90)',
-          }}
+          style={{ letterSpacing: '-0.03em', lineHeight: 1, color: 'rgba(255,250,242,0.88)' }}
         >
           {str}
         </motion.span>
