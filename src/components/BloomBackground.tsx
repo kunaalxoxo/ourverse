@@ -1,48 +1,68 @@
 'use client';
-import { motion } from 'framer-motion';
 
 export default function BloomBackground() {
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }} aria-hidden>
-      {/* Large warm orb — top left */}
-      <motion.div
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }} aria-hidden>
+
+      {/* ── Dot grid ───────────────────────────────── */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'radial-gradient(circle, rgba(176,143,232,0.18) 1px, transparent 1px)',
+        backgroundSize: '32px 32px',
+        opacity: 0.22,
+        maskImage: 'radial-gradient(ellipse 100% 100% at 50% 50%, black 20%, transparent 75%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 100% 100% at 50% 50%, black 20%, transparent 75%)',
+      }} />
+
+      {/* ── Static violet glow — top left ──────────── */}
+      <div style={{
+        position: 'absolute',
+        width: 700, height: 700,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(176,143,232,0.055) 0%, transparent 65%)',
+        top: -200, left: -200,
+        filter: 'blur(60px)',
+      }} />
+
+      {/* ── Static coral glow — bottom right ───────── */}
+      <div style={{
+        position: 'absolute',
+        width: 500, height: 500,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(244,149,106,0.04) 0%, transparent 65%)',
+        bottom: -160, right: -160,
+        filter: 'blur(60px)',
+      }} />
+
+      {/* ── Film grain SVG noise ────────────────────── */}
+      <svg
         style={{
-          position: 'absolute',
-          width: 640, height: 640,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,179,198,0.065) 0%, transparent 68%)',
-          top: -180, left: -180,
-          filter: 'blur(48px)',
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          opacity: 0.048,
+          mixBlendMode: 'overlay',
+          pointerEvents: 'none',
         }}
-        animate={{ x: [0, 36, 0], y: [0, 20, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      {/* Lavender orb — bottom right */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 480, height: 480,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(234,220,248,0.055) 0%, transparent 68%)',
-          bottom: -140, right: -140,
-          filter: 'blur(48px)',
-        }}
-        animate={{ x: [0, -26, 0], y: [0, -18, 0] }}
-        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
-      />
-      {/* Accent mid orb */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 260, height: 260,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,140,170,0.04) 0%, transparent 68%)',
-          top: '48%', left: '42%',
-          filter: 'blur(40px)',
-        }}
-        animate={{ x: [0, 44, -16, 0], y: [0, -24, 14, 0] }}
-        transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut', delay: 8 }}
-      />
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <filter id="grain">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.68"
+            numOctaves="4"
+            stitchTiles="stitch"
+          />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#grain)" />
+      </svg>
+
+      {/* ── Edge vignette ───────────────────────────── */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse 90% 90% at 50% 50%, transparent 55%, rgba(4,5,14,0.65) 100%)',
+      }} />
+
     </div>
   );
 }
