@@ -7,10 +7,11 @@ import confetti from 'canvas-confetti';
 
 function boom() {
   confetti({
-    particleCount: 80,
-    spread: 65,
+    particleCount: 90,
+    spread: 70,
     origin: { y: 0.5 },
-    colors: ['#FFB3C6', '#EADCF8', '#f9a8d4', '#fde68a'],
+    /* Indigo Dream palette */
+    colors: ['#B08FE8', '#F4956A', '#d4b8f5', '#fbc49a', '#e0d4ff'],
     zIndex: 9999,
   });
 }
@@ -34,10 +35,8 @@ export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpd
       transition={{ duration: 0.4 }}
       className="card coupon-card card-interactive flex flex-col"
     >
-      {/* Shimmer accent bar */}
       {dim ? <div className="accent-bar-dim" /> : <div className="accent-bar" />}
 
-      {/* Image */}
       {coupon.imageUrl && (
         <div className="w-full h-36 overflow-hidden relative">
           <img
@@ -45,25 +44,19 @@ export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpd
             className="w-full h-full object-cover opacity-70"
             style={{ transition: 'opacity 0.3s ease' }}
           />
-          {/* bottom fade */}
           <div className="absolute inset-x-0 bottom-0 h-8"
             style={{ background: 'linear-gradient(to top, var(--surface), transparent)' }} />
         </div>
       )}
 
       <div className="p-5 flex flex-col flex-1 relative z-10">
-        {/* Top row: label + badge */}
         <div className="flex items-center justify-between mb-3">
           <span className="label">Coupon</span>
           {used && (
-            <span className="pill pill-green">
-              <CheckCircle2 size={9} /> Redeemed
-            </span>
+            <span className="pill pill-green"><CheckCircle2 size={9} /> Redeemed</span>
           )}
           {expired && !used && (
-            <span className="pill pill-amber">
-              <Clock3 size={9} /> Expired
-            </span>
+            <span className="pill pill-amber"><Clock3 size={9} /> Expired</span>
           )}
         </div>
 

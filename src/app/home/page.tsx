@@ -41,7 +41,6 @@ function reveal(delay = 0, yOffset = 32) {
   };
 }
 
-/* Animated section line */
 function SectionLine() {
   return (
     <motion.div
@@ -60,6 +59,7 @@ export default function HomePage() {
   const [user, setUser] = useState<{ displayName: string; username: string; partner: string } | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [modal, setModal] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const load = () => {
     const u = getStoredUser();
@@ -69,9 +69,16 @@ export default function HomePage() {
   };
 
   useEffect(() => { load(); }, []);
+
+  /* Fade out scroll cue after user scrolls */
+  useEffect(() => {
+    const fn = () => { if (window.scrollY > 80) setScrolled(true); };
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
   if (!user) return null;
 
-  /* Hero word stagger */
   const heroWords = ['Our', 'Verse'];
 
   return (
@@ -83,6 +90,17 @@ export default function HomePage() {
 
       {/* ─── HERO ─────────────────────────────────────── */}
       <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-32 overflow-hidden">
+
+        {/* Hero section index 01 */}
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.8 }}
+          className="section-index"
+          style={{ position: 'absolute', top: '88px', right: '24px' }}
+        >
+          01
+        </motion.span>
 
         {/* Eyebrow */}
         <motion.div
@@ -139,10 +157,16 @@ export default function HomePage() {
           <AffirmationCarousel />
         </motion.div>
 
-        {/* Scroll cue */}
+        {/* Scroll cue — fades out once user scrolls */}
         <motion.div
-          animate={{ y: [0, 6, 0], opacity: [0.25, 0.55, 0.25] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          animate={scrolled
+            ? { opacity: 0, y: 8, pointerEvents: 'none' }
+            : { y: [0, 6, 0], opacity: [0.25, 0.55, 0.25] }
+          }
+          transition={scrolled
+            ? { duration: 0.5, ease: 'easeOut' }
+            : { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }
+          }
           className="absolute bottom-10 flex flex-col items-center gap-2"
         >
           <span className="label" style={{ letterSpacing: '0.3em' }}>scroll</span>
@@ -158,7 +182,6 @@ export default function HomePage() {
       {/* ─── COUPONS ─────────────────────────────────── */}
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-3xl mx-auto">
-
           <motion.div {...reveal()} className="mb-18">
             <div className="flex items-end justify-between mb-6">
               <div>
@@ -216,7 +239,6 @@ export default function HomePage() {
       {/* ─── CREATIONS ──────────────────────────────── */}
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-3xl mx-auto">
-
           <motion.div {...reveal()} className="mb-18">
             <div className="flex items-end justify-between mb-6">
               <div>
@@ -228,7 +250,6 @@ export default function HomePage() {
             <SectionLine />
           </motion.div>
 
-          {/* Full-width horizontal project cards — TIWIS style */}
           <div className="flex flex-col gap-0 mt-12">
             {PROJECTS.map((proj, i) => (
               <motion.a
@@ -239,10 +260,7 @@ export default function HomePage() {
                 {...reveal(i * 0.12)}
                 className="project-row group"
               >
-                {/* Index */}
                 <span className="project-row-index">{proj.index}</span>
-
-                {/* Content */}
                 <div className="project-row-body">
                   <div className="flex items-center gap-3 mb-1">
                     <h3 className="project-row-title">{proj.title}</h3>
@@ -250,8 +268,6 @@ export default function HomePage() {
                   </div>
                   <p className="project-row-desc">{proj.desc}</p>
                 </div>
-
-                {/* Arrow */}
                 <motion.div
                   className="project-row-arrow"
                   whileHover={{ rotate: 45 }}
@@ -279,13 +295,13 @@ export default function HomePage() {
             <div>
               <p
                 className="font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.1] max-w-xs"
-                style={{ color: 'rgba(240,232,244,0.75)', letterSpacing: '-0.02em' }}
+                style={{ color: 'rgba(230,235,255,0.76)', letterSpacing: '-0.02em' }}
               >
                 Some stories aren&apos;t written in books —
               </p>
               <p
                 className="font-serif-light text-[clamp(22px,4vw,34px)] mt-2"
-                style={{ color: 'rgba(240,232,244,0.35)' }}
+                style={{ color: 'rgba(230,235,255,0.32)' }}
               >
                 they&apos;re written in moments together.
               </p>

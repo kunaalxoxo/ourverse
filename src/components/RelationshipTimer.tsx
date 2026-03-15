@@ -16,7 +16,6 @@ function diff() {
 
 function Digit({ value, label, delay }: { value: number; label: string; delay: number }) {
   const str = String(value).padStart(2, '0');
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -32,19 +31,26 @@ function Digit({ value, label, delay }: { value: number; label: string; delay: n
           border: '1px solid var(--border)',
         }}
       >
-        {/* Subtle inner glow top */}
+        {/* Indigo Dream: violet top glow line */}
         <div
           className="absolute inset-x-0 top-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,179,198,0.2), transparent)' }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(176,143,232,0.28), transparent)' }}
         />
-
+        {/* Subtle inner bottom shadow */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-4"
+          style={{ background: 'linear-gradient(to top, rgba(4,5,14,0.35), transparent)' }}
+        />
         <motion.span
           key={str}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.22, ease: 'easeOut' }}
-          className="font-display text-[28px] font-medium text-white/88"
-          style={{ letterSpacing: '-0.03em', lineHeight: 1 }}
+          className="font-display text-[28px] font-medium"
+          style={{
+            letterSpacing: '-0.03em', lineHeight: 1,
+            color: 'rgba(230,235,255,0.90)',
+          }}
         >
           {str}
         </motion.span>
