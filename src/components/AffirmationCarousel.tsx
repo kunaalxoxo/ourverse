@@ -1,45 +1,40 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const LINES = [
-  'One more day with you.',
-  'Our little universe.',
-  'Built on laughter.',
-  'Still choosing you.',
-  'A story still being written.',
-  'Every moment, a favourite.',
-  'Home is wherever you are.',
-  'In every version, you.',
+const AFFIRMATIONS = [
+  'you make everything better',
+  'i choose you, every single day',
+  'home is wherever you are',
+  'you are my favourite adventure',
+  'loving you is the easiest thing',
+  'every moment with you is a gift',
+  'you are enough, always',
 ];
 
 export default function AffirmationCarousel() {
-  const [i, setI] = useState(0);
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setI(p => (p + 1) % LINES.length), 3800);
+    const id = setInterval(() => setIdx(i => (i + 1) % AFFIRMATIONS.length), 4000);
     return () => clearInterval(id);
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      {/* Tiny live indicator */}
-      <span className="pulse-dot" />
-
-      <div className="h-8 overflow-hidden flex items-center justify-center">
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={i}
-            initial={{ opacity: 0, filter: 'blur(4px)', y: 8 }}
-            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-            exit={{ opacity: 0, filter: 'blur(3px)', y: -8 }}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-            className="font-serif-light text-[17px] md:text-[19px] text-white/38 text-center select-none whitespace-nowrap"
-          >
-            {LINES[i]}
-          </motion.p>
-        </AnimatePresence>
-      </div>
+    <div style={{ height: 24, overflow: 'hidden', position: 'relative' }}>
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={idx}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{    opacity: 0, y: -10 }}
+          transition={{ duration: 0.5, ease: 'easeInOut' }}
+          className="font-serif-light text-center"
+          style={{ fontSize: 'clamp(13px, 2vw, 15px)', color: 'rgba(176,143,232,0.55)', position: 'absolute', width: '100%' }}
+        >
+          {AFFIRMATIONS[idx]}
+        </motion.p>
+      </AnimatePresence>
     </div>
   );
 }

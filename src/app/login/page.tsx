@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useAnimate } from 'framer-motion';
 import { login, storeUser, getStoredUser } from '@/lib/auth';
 import BloomBackground from '@/components/BloomBackground';
-import ParticleCanvas from '@/components/ParticleCanvas';
+import CursorGlow from '@/components/CursorGlow';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
@@ -14,8 +14,6 @@ export default function LoginPage() {
   const [show, setShow] = useState(false);
   const [err, setErr]   = useState('');
   const [busy, setBusy] = useState(false);
-
-  // useAnimate gives us imperative control — no invalid custom props needed
   const [formRef, animate] = useAnimate();
 
   useEffect(() => { if (getStoredUser()) router.replace('/home'); }, [router]);
@@ -31,74 +29,76 @@ export default function LoginPage() {
     const user = login(u, p);
     if (user) { storeUser(user); router.push('/home'); }
     else {
-      setErr("Hmm, that doesn't seem right.");
+      setErr("Hmm, that doesn\u2019t seem right.");
       setBusy(false);
       shakeForm();
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center relative px-5">
-      <ParticleCanvas />
+    <main className="min-h-screen flex items-center justify-center relative px-5" style={{ background: 'var(--bg)' }}>
+      <CursorGlow />
       <BloomBackground />
 
       <div className="relative z-10 w-full max-w-[340px]">
+
         {/* Wordmark */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.65, ease: 'easeOut' }}
           className="text-center mb-10"
         >
+          {/* Gradient title matching hero */}
           <h1
-            className="font-display text-[36px] font-medium tracking-tight"
-            style={{ color: 'rgba(240,232,244,0.88)', letterSpacing: '-0.025em', lineHeight: 1 }}
+            className="font-display text-[38px] font-medium"
+            style={{
+              letterSpacing: '-0.03em', lineHeight: 1,
+              background: 'linear-gradient(135deg, rgba(230,235,255,0.92) 0%, rgba(176,143,232,0.85) 60%, rgba(244,149,106,0.70) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
           >
             Our Verse
           </h1>
-          <p style={{ fontSize: 12.5, color: 'var(--text-faint)', marginTop: 8 }}>
+          <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 10, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
             a private little universe
           </p>
         </motion.div>
 
-        {/* Card — ref from useAnimate, plain motion.form with valid props only */}
+        {/* Form card */}
         <motion.form
           ref={formRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: 'easeOut', delay: 0.08 }}
+          transition={{ duration: 0.55, ease: 'easeOut', delay: 0.1 }}
           onSubmit={submit}
           className="surface rounded-2xl p-7 space-y-4"
-          style={{ boxShadow: '0 24px 72px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,179,198,0.05)' }}
+          style={{
+            boxShadow: '0 24px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(176,143,232,0.07)',
+          }}
         >
-          {/* Username */}
           <div>
             <label className="label block mb-1.5">Username</label>
             <input
-              value={u}
-              onChange={e => setU(e.target.value)}
+              value={u} onChange={e => setU(e.target.value)}
               placeholder="who are you?"
-              className="px-4 py-3"
-              required
-              autoComplete="off"
+              className="px-4 py-3" required autoComplete="off"
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="label block mb-1.5">Password</label>
             <div className="relative">
               <input
                 type={show ? 'text' : 'password'}
-                value={p}
-                onChange={e => setP(e.target.value)}
+                value={p} onChange={e => setP(e.target.value)}
                 placeholder="your little secret"
-                className="px-4 py-3 pr-10"
-                required
+                className="px-4 py-3 pr-10" required
               />
               <button
-                type="button"
-                onClick={() => setShow(!show)}
+                type="button" onClick={() => setShow(!show)}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200"
                 style={{ color: 'var(--text-faint)' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted)')}
@@ -109,25 +109,22 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Error */}
           <AnimatePresence>
             {err && (
               <motion.p
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                style={{ fontSize: 12, color: 'rgba(255,179,198,0.65)', textAlign: 'center' }}
+                style={{ fontSize: 12, color: 'rgba(176,143,232,0.70)', textAlign: 'center' }}
               >
                 {err}
               </motion.p>
             )}
           </AnimatePresence>
 
-          {/* Submit */}
           <motion.button
             whileTap={{ scale: 0.98 }}
-            type="submit"
-            disabled={busy}
+            type="submit" disabled={busy}
             className="btn-primary w-full mt-1"
           >
             {busy ? 'Opening…' : 'Enter our world'}
@@ -135,9 +132,8 @@ export default function LoginPage() {
         </motion.form>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 0.55 }}
           style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 24 }}
         >
           Just the two of us in here 🔒

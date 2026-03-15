@@ -54,11 +54,28 @@ function SectionLine() {
   );
 }
 
+/* Skeleton shown while user loads */
+function Skeleton() {
+  return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
+      <motion.div
+        animate={{ opacity: [0.25, 0.6, 0.25] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        className="flex flex-col items-center gap-4"
+      >
+        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(176,143,232,0.12)' }} />
+        <div style={{ width: 100, height: 10, borderRadius: 5, background: 'rgba(176,143,232,0.08)' }} />
+        <div style={{ width: 64, height: 8, borderRadius: 4, background: 'rgba(176,143,232,0.05)' }} />
+      </motion.div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const router = useRouter();
-  const [user, setUser] = useState<{ displayName: string; username: string; partner: string } | null>(null);
+  const [user, setUser]     = useState<{ displayName: string; username: string; partner: string } | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [modal, setModal] = useState(false);
+  const [modal, setModal]   = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const load = () => {
@@ -70,14 +87,13 @@ export default function HomePage() {
 
   useEffect(() => { load(); }, []);
 
-  /* Fade out scroll cue after user scrolls */
   useEffect(() => {
     const fn = () => { if (window.scrollY > 80) setScrolled(true); };
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  if (!user) return null;
+  if (!user) return <Skeleton />;
 
   const heroWords = ['Our', 'Verse'];
 
@@ -91,7 +107,6 @@ export default function HomePage() {
       {/* ─── HERO ─────────────────────────────────────── */}
       <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-32 overflow-hidden">
 
-        {/* Hero section index 01 */}
         <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -102,7 +117,6 @@ export default function HomePage() {
           01
         </motion.span>
 
-        {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -114,7 +128,6 @@ export default function HomePage() {
           <div className="eyebrow-line" />
         </motion.div>
 
-        {/* Giant editorial title */}
         <div className="hero-title-wrap">
           {heroWords.map((word, wi) => (
             <div key={word} className={`hero-word-row ${wi === 1 ? 'hero-word-row--right' : 'hero-word-row--left'}`}>
@@ -137,7 +150,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Timer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -147,7 +159,6 @@ export default function HomePage() {
           <RelationshipTimer />
         </motion.div>
 
-        {/* Affirmation */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -157,7 +168,6 @@ export default function HomePage() {
           <AffirmationCarousel />
         </motion.div>
 
-        {/* Scroll cue — fades out once user scrolls */}
         <motion.div
           animate={scrolled
             ? { opacity: 0, y: 8, pointerEvents: 'none' }
@@ -175,9 +185,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── MARQUEE 1 ──────────────────────────────── */}
-      <div className="relative z-10">
-        <MarqueeStrip />
-      </div>
+      <div className="relative z-10"><MarqueeStrip /></div>
 
       {/* ─── COUPONS ─────────────────────────────────── */}
       <section className="relative z-10 py-32 px-6">
@@ -199,8 +207,7 @@ export default function HomePage() {
             </motion.p>
           ) : (
             <motion.div
-              initial="hidden"
-              whileInView="visible"
+              initial="hidden" whileInView="visible"
               viewport={{ once: true, margin: '-40px' }}
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-12"
@@ -231,10 +238,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── MARQUEE 2 (reversed) ───────────────────── */}
-      <div className="relative z-10">
-        <MarqueeStrip inverted />
-      </div>
+      {/* ─── MARQUEE 2 ───────────────────────────────── */}
+      <div className="relative z-10"><MarqueeStrip inverted /></div>
 
       {/* ─── CREATIONS ──────────────────────────────── */}
       <section className="relative z-10 py-32 px-6">
@@ -254,9 +259,7 @@ export default function HomePage() {
             {PROJECTS.map((proj, i) => (
               <motion.a
                 key={proj.url}
-                href={proj.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={proj.url} target="_blank" rel="noopener noreferrer"
                 {...reveal(i * 0.12)}
                 className="project-row group"
               >
@@ -268,11 +271,7 @@ export default function HomePage() {
                   </div>
                   <p className="project-row-desc">{proj.desc}</p>
                 </div>
-                <motion.div
-                  className="project-row-arrow"
-                  whileHover={{ rotate: 45 }}
-                  transition={{ duration: 0.25 }}
-                >
+                <motion.div className="project-row-arrow" whileHover={{ rotate: 45 }} transition={{ duration: 0.25 }}>
                   <ArrowUpRight size={18} />
                 </motion.div>
               </motion.a>
@@ -286,8 +285,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto">
           <SectionLine />
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1.2, delay: 0.2 }}
             className="pt-16 flex flex-col md:flex-row items-start md:items-end justify-between gap-10"
@@ -316,8 +314,7 @@ export default function HomePage() {
 
       {modal && (
         <AddCouponModal
-          from={user.username}
-          to={user.partner}
+          from={user.username} to={user.partner}
           onClose={() => setModal(false)}
           onCreated={load}
         />
