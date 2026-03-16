@@ -42,7 +42,7 @@ function Skeleton() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
       <motion.div animate={{ opacity: [0.25, 0.6, 0.25] }} transition={{ duration: 1.8, repeat: Infinity }}>
-        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(200,184,240,0.10)' }} />
+        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--accent-bg)' }} />
       </motion.div>
     </div>
   );
@@ -195,17 +195,32 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="relative z-10 py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <SectionLine />
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.2 }} className="pt-14 flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
+          <motion.div
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+            viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.2 }}
+            className="pt-14 flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
+          >
             <div>
-              <p className="font-display text-[clamp(24px,4.5vw,38px)] font-medium leading-[1.1] max-w-xs" style={{ color: 'rgba(242,240,255,0.72)', letterSpacing: '-0.02em' }}>Some stories aren&apos;t written in books —</p>
-              <p className="font-serif-light text-[clamp(20px,3.5vw,30px)] mt-2" style={{ color: 'rgba(242,240,255,0.26)' }}>they&apos;re written in moments together.</p>
+              <p
+                className="font-display font-medium leading-snug max-w-xs"
+                style={{ fontSize: 'clamp(22px, 4vw, 34px)', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
+              >
+                Some stories aren&apos;t written in books —
+              </p>
+              <p
+                className="font-serif-light mt-2"
+                style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'var(--text-muted)' }}
+              >
+                they&apos;re written in moments together.
+              </p>
             </div>
-            <div className="text-right">
-              <p className="label mb-2">Our Verse</p>
-              <p className="label" style={{ color: 'var(--text-faint)' }}>{new Date().getFullYear()}</p>
+            <div style={{ textAlign: 'right' }}>
+              <p className="label" style={{ marginBottom: 6 }}>Our Verse</p>
+              <p className="label">{new Date().getFullYear()}</p>
             </div>
           </motion.div>
         </div>
