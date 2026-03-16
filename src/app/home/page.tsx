@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { getStoredUser } from '@/lib/auth';
@@ -54,7 +54,6 @@ function SectionLine() {
   );
 }
 
-/* Skeleton shown while user loads */
 function Skeleton() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
@@ -63,9 +62,9 @@ function Skeleton() {
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
         className="flex flex-col items-center gap-4"
       >
-        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(176,143,232,0.12)' }} />
-        <div style={{ width: 100, height: 10, borderRadius: 5, background: 'rgba(176,143,232,0.08)' }} />
-        <div style={{ width: 64, height: 8, borderRadius: 4, background: 'rgba(176,143,232,0.05)' }} />
+        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(232,213,176,0.12)' }} />
+        <div style={{ width: 100, height: 10, borderRadius: 5, background: 'rgba(232,213,176,0.08)' }} />
+        <div style={{ width: 64, height: 8, borderRadius: 4, background: 'rgba(232,213,176,0.05)' }} />
       </motion.div>
     </div>
   );
@@ -73,19 +72,20 @@ function Skeleton() {
 
 export default function HomePage() {
   const router = useRouter();
-  const [user, setUser]     = useState<{ displayName: string; username: string; partner: string } | null>(null);
+  const [user,    setUser]    = useState<{ displayName: string; username: string; partner: string } | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [modal, setModal]   = useState(false);
+  const [modal,   setModal]   = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const load = () => {
+  const load = useCallback(async () => {
     const u = getStoredUser();
     if (!u) { router.replace('/login'); return; }
     setUser(u);
-    setCoupons(getCouponsForUser(u.username));
-  };
+    const data = await getCouponsForUser(u.username);
+    setCoupons(data);
+  }, [router]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
     const fn = () => { if (window.scrollY > 80) setScrolled(true); };
@@ -104,12 +104,11 @@ export default function HomePage() {
       <BloomBackground />
       <Navbar />
 
-      {/* ─── HERO ─────────────────────────────────────── */}
+      {/* ─── HERO ───────────────────────────────────────────── */}
       <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-32 overflow-hidden">
 
         <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.8 }}
           className="section-index"
           style={{ position: 'absolute', top: '88px', right: '24px' }}
@@ -118,8 +117,7 @@ export default function HomePage() {
         </motion.span>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.7 }}
           className="flex items-center gap-3 mb-12"
         >
@@ -133,15 +131,10 @@ export default function HomePage() {
             <div key={word} className={`hero-word-row ${wi === 1 ? 'hero-word-row--right' : 'hero-word-row--left'}`}>
               {word.split('').map((char, ci) => (
                 <motion.span
-                  key={ci}
-                  className="hero-char"
+                  key={ci} className="hero-char"
                   initial={{ opacity: 0, y: 60, rotateX: -40 }}
                   animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                  transition={{
-                    delay: 0.4 + wi * 0.18 + ci * 0.055,
-                    duration: 0.7,
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                  }}
+                  transition={{ delay: 0.4 + wi * 0.18 + ci * 0.055, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
                   {char}
                 </motion.span>
@@ -151,8 +144,7 @@ export default function HomePage() {
         </div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 1.1, duration: 0.8 }}
           className="mt-14"
         >
@@ -160,8 +152,7 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 1.35, duration: 0.8 }}
           className="mt-8"
         >
@@ -184,10 +175,10 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ─── MARQUEE 1 ──────────────────────────────── */}
+      {/* ─── MARQUEE 1 ───────────────────────────────────────── */}
       <div className="relative z-10"><MarqueeStrip /></div>
 
-      {/* ─── COUPONS ─────────────────────────────────── */}
+      {/* ─── COUPONS ───────────────────────────────────────────── */}
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div {...reveal()} className="mb-18">
@@ -227,8 +218,7 @@ export default function HomePage() {
 
           <motion.div {...reveal(0.1)} className="flex justify-center mt-14">
             <motion.button
-              whileHover={{ scale: 1.04, y: -2 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}
               onClick={() => setModal(true)}
               className="btn-ghost"
             >
@@ -238,10 +228,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── MARQUEE 2 ───────────────────────────────── */}
+      {/* ─── MARQUEE 2 ────────────────────────────────────────── */}
       <div className="relative z-10"><MarqueeStrip inverted /></div>
 
-      {/* ─── CREATIONS ──────────────────────────────── */}
+      {/* ─── CREATIONS ────────────────────────────────────────── */}
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div {...reveal()} className="mb-18">
@@ -280,7 +270,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── FOOTER ──────────────────────────────────── */}
+      {/* ─── FOOTER ────────────────────────────────────────────── */}
       <footer className="relative z-10 py-24 px-6">
         <div className="max-w-3xl mx-auto">
           <SectionLine />
@@ -293,13 +283,13 @@ export default function HomePage() {
             <div>
               <p
                 className="font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.1] max-w-xs"
-                style={{ color: 'rgba(230,235,255,0.76)', letterSpacing: '-0.02em' }}
+                style={{ color: 'rgba(255,250,242,0.72)', letterSpacing: '-0.02em' }}
               >
                 Some stories aren&apos;t written in books —
               </p>
               <p
                 className="font-serif-light text-[clamp(22px,4vw,34px)] mt-2"
-                style={{ color: 'rgba(230,235,255,0.32)' }}
+                style={{ color: 'rgba(255,250,242,0.26)' }}
               >
                 they&apos;re written in moments together.
               </p>
