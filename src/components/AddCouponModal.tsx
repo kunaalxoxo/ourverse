@@ -7,11 +7,11 @@ import confetti from 'canvas-confetti';
 
 const EXAMPLES = [
   { name: 'Movie Night',      description: 'A cozy film night — you pick the movie 🎬', emoji: '🎬' },
-  { name: 'Gaming Session',   description: 'One full gaming session together 🎮',     emoji: '🎮' },
-  { name: 'Ice Cream Date',   description: 'Two scoops of happiness 🍦',              emoji: '🍦' },
-  { name: 'One Free Hug',     description: 'Redeemable any time, no reason needed 🤍',  emoji: '🤍' },
-  { name: 'Breakfast in Bed', description: 'Morning cuddles with coffee ☕',             emoji: '☕' },
-  { name: 'Surprise Outing',  description: 'Trust me on this one ✨',                   emoji: '✨' },
+  { name: 'Gaming Session',   description: 'One full gaming session together 🎮',      emoji: '🎮' },
+  { name: 'Ice Cream Date',   description: 'Two scoops of happiness 🍦',               emoji: '🍦' },
+  { name: 'One Free Hug',     description: 'Redeemable any time, no reason needed 🤍', emoji: '🤍' },
+  { name: 'Breakfast in Bed', description: 'Morning cuddles with coffee ☕',            emoji: '☕' },
+  { name: 'Surprise Outing',  description: 'Trust me on this one ✨',                  emoji: '✨' },
 ];
 
 function spawnHearts() {
@@ -27,7 +27,11 @@ function spawnHearts() {
       setTimeout(() => el.remove(), 1400);
     }, k * 75);
   }
-  confetti({ particleCount: 55, spread: 60, origin: { y: 0.5 }, colors: ['#FFB3C6', '#EADCF8', '#f9a8d4'], zIndex: 9999 });
+  confetti({
+    particleCount: 55, spread: 60, origin: { y: 0.5 },
+    colors: ['#E8D5B0', '#C49A6C', '#f0e4cc', '#fff8ee'],
+    zIndex: 9999,
+  });
 }
 
 interface Props {
@@ -37,15 +41,13 @@ interface Props {
 }
 
 export default function AddCouponModal({ from, to, onClose, onCreated }: Props) {
-  const [form, setForm] = useState({ name: '', description: '', deadline: '', imageUrl: '' });
-  const [busy, setBusy]   = useState(false);
-  const [done, setDone]   = useState(false);
+  const [form, setForm] = useState({ name: '', description: '', deadline: '', image_url: '' });
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [err,  setErr]  = useState('');
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // Autofocus on open
   useEffect(() => { setTimeout(() => nameRef.current?.focus(), 120); }, []);
-
-  // Close on Escape
   useEffect(() => {
     const fn = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', fn);
@@ -57,9 +59,19 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
-    await new Promise(r => setTimeout(r, 300));
-    addCoupon({ from, to, name: form.name, description: form.description, deadline: form.deadline, imageUrl: form.imageUrl || undefined });
+    setBusy(true); setErr('');
+    const result = await addCoupon({
+      from, to,
+      name: form.name,
+      description: form.description,
+      deadline: form.deadline,
+      image_url: form.image_url || undefined,
+    });
+    if (!result) {
+      setErr('Something went wrong — please try again.');
+      setBusy(false);
+      return;
+    }
     spawnHearts();
     setDone(true);
     setBusy(false);
@@ -72,9 +84,7 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
     <AnimatePresence>
       <motion.div
         key="backdrop"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         transition={{ duration: 0.22 }}
         className="modal-backdrop"
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
@@ -85,29 +95,25 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
           exit={{ opacity: 0, scale: 0.96, y: 16 }}
           transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="surface-raised w-full max-w-[420px] max-h-[90vh] overflow-y-auto rounded-2xl"
-          style={{ boxShadow: '0 48px 120px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,179,198,0.07)' }}
+          style={{ boxShadow: '0 48px 120px rgba(0,0,0,0.65), 0 0 0 1px rgba(232,213,176,0.07)' }}
         >
           <AnimatePresence mode="wait">
             {done ? (
-              /* ─ Success state ─ */
               <motion.div
                 key="done"
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'spring', stiffness: 220, damping: 20 }}
                 className="flex flex-col items-center justify-center py-16 px-8 text-center"
               >
                 <motion.div
-                  initial={{ scale: 0, rotate: -20 }}
-                  animate={{ scale: 1, rotate: 0 }}
+                  initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.05 }}
                   className="text-5xl mb-5"
                 >💌</motion.div>
-                <p className="font-display text-[20px] text-white/82">Sent with love</p>
+                <p className="font-display text-[20px]" style={{ color: 'var(--text-primary)' }}>Sent with love</p>
                 <p className="text-[12.5px] mt-1.5" style={{ color: 'var(--text-faint)' }}>Waiting for {toName} to find it.</p>
               </motion.div>
             ) : (
-              /* ─ Form state ─ */
               <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 pt-6 pb-5">
@@ -116,10 +122,9 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
                     <p className="text-[11.5px] mt-0.5" style={{ color: 'var(--text-faint)' }}>for {toName} 🌸</p>
                   </div>
                   <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={onClose}
+                    whileTap={{ scale: 0.9 }} onClick={onClose}
                     className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.3)' }}
+                    style={{ background: 'rgba(232,213,176,0.06)', color: 'rgba(232,213,176,0.35)' }}
                   >
                     <X size={14} />
                   </motion.button>
@@ -131,10 +136,9 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
                   <div className="flex flex-wrap gap-1.5">
                     {EXAMPLES.map(ex => (
                       <motion.button
-                        key={ex.name}
-                        whileTap={{ scale: 0.96 }}
+                        key={ex.name} whileTap={{ scale: 0.96 }}
                         onClick={() => fill(ex)}
-                        className="pill pill-pink cursor-pointer transition-all hover:border-[rgba(255,179,198,0.28)] hover:bg-[rgba(255,179,198,0.12)]"
+                        className="pill pill-pink cursor-pointer transition-all"
                       >
                         {ex.emoji} {ex.name}
                       </motion.button>
@@ -148,28 +152,17 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
                 <form onSubmit={submit} className="px-6 pt-5 pb-6 space-y-4">
                   <div>
                     <label className="label block mb-1.5">Name</label>
-                    <input
-                      ref={nameRef}
-                      value={form.name}
+                    <input ref={nameRef} value={form.name}
                       onChange={e => setForm({ ...form, name: e.target.value })}
-                      placeholder="e.g. Movie Night"
-                      className="px-4 py-3"
-                      required
-                    />
+                      placeholder="e.g. Movie Night" className="px-4 py-3" required />
                   </div>
-
                   <div>
                     <label className="label block mb-1.5">Description</label>
-                    <textarea
-                      value={form.description}
+                    <textarea value={form.description}
                       onChange={e => setForm({ ...form, description: e.target.value })}
                       placeholder="What does this coupon mean?"
-                      rows={3}
-                      className="px-4 py-3 resize-none"
-                      required
-                    />
+                      rows={3} className="px-4 py-3 resize-none" required />
                   </div>
-
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="label block mb-1.5">Valid Until</label>
@@ -179,12 +172,15 @@ export default function AddCouponModal({ from, to, onClose, onCreated }: Props) 
                     </div>
                     <div>
                       <label className="label block mb-1.5">Image URL</label>
-                      <input type="url" value={form.imageUrl}
-                        onChange={e => setForm({ ...form, imageUrl: e.target.value })}
-                        placeholder="https://…"
-                        className="px-3 py-3" />
+                      <input type="url" value={form.image_url}
+                        onChange={e => setForm({ ...form, image_url: e.target.value })}
+                        placeholder="https://…" className="px-3 py-3" />
                     </div>
                   </div>
+
+                  {err && (
+                    <p style={{ fontSize: 12, color: 'rgba(232,213,176,0.55)', textAlign: 'center' }}>{err}</p>
+                  )}
 
                   <button type="submit" disabled={busy} className="btn-primary w-full mt-1">
                     {busy ? 'Sending…' : 'Send with love ✨'}

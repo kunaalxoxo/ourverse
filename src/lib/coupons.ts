@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { supabase } from './supabase';
 
 export interface Coupon {
   id: string;
@@ -7,48 +7,39 @@ export interface Coupon {
   name: string;
   description: string;
   deadline: string;
-  imageUrl?: string;
+  image_url?: string;
   used: boolean;
-  createdAt: string;
+  created_at: string;
 }
 
-const STORAGE_KEY = 'ourverse_coupons';
-
-export function getCoupons(): Coupon[] {
-  if (typeof window === 'undefined') return [];
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return [];
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
+export async function getCouponsForUser(username: string): Promise<Coupon[]> {
+  const { data, error } = await supabase
+    .from('coupons')
+    .select('*')
+    .eq('to', username)
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
 }
 
-export function getCouponsForUser(username: string): Coupon[] {
-  return getCoupons().filter((c) => c.to === username);
+export async function addCoupon(
+  coupon: Omit<Coupon, 'id' | 'used' | 'created_at'>
+): Promise<Coupon | null> {
+  const { data, error } = await supabase
+    .from('coupons')
+    .insert([{ ...coupon, used: false }])
+    .select()
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
 }
 
-export function addCoupon(coupon: Omit<Coupon, 'id' | 'used' | 'createdAt'>): Coupon {
-  const newCoupon: Coupon = {
-    ...coupon,
-    id: uuidv4(),
-    used: false,
-    createdAt: new Date().toISOString(),
-  };
-  const all = getCoupons();
-  all.push(newCoupon);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  return newCoupon;
-}
-
-export function markCouponUsed(id: string): void {
-  const all = getCoupons();
-  const idx = all.findIndex((c) => c.id === id);
-  if (idx !== -1) {
-    all[idx].used = true;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  }
+export async function markCouponUsed(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('coupons')
+    .update({ used: true })
+    .eq('id', id);
+  if (error) console.error(error);
 }
 
 export function isCouponExpired(deadline: string): boolean {

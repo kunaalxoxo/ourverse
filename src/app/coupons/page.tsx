@@ -36,13 +36,18 @@ export default function CouponsPage() {
   const router = useRouter();
   const [user, setUser]       = useState<{ displayName: string; username: string; partner: string } | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter]   = useState<'all' | 'active' | 'used'>('all');
   const [modal, setModal]     = useState(false);
 
-  const load = useCallback(() => {
+  const load = useCallback(async () => {
     const u = getStoredUser();
     if (!u) { router.replace('/login'); return; }
-    setUser(u); setCoupons(getCouponsForUser(u.username));
+    setUser(u);
+    setLoading(true);
+    const data = await getCouponsForUser(u.username);
+    setCoupons(data);
+    setLoading(false);
   }, [router]);
 
   useEffect(() => { load(); }, [load]);
@@ -51,16 +56,16 @@ export default function CouponsPage() {
     filter === 'used' ? c.used : filter === 'active' ? !c.used : true
   );
 
-  if (!user) return (
-    /* ── Skeleton loader ── */
+  /* Skeleton */
+  if (!user || loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
       <motion.div
         animate={{ opacity: [0.3, 0.7, 0.3] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
         className="flex flex-col items-center gap-3"
       >
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(176,143,232,0.15)' }} />
-        <div style={{ width: 80, height: 8, borderRadius: 4, background: 'rgba(176,143,232,0.10)' }} />
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(232,213,176,0.12)' }} />
+        <div style={{ width: 80, height: 8, borderRadius: 4, background: 'rgba(232,213,176,0.08)' }} />
       </motion.div>
     </div>
   );
@@ -81,7 +86,7 @@ export default function CouponsPage() {
                 <span className="label mb-3 block">Gifts from the heart</span>
                 <h1 className="section-heading">Your Coupons</h1>
               </div>
-              <span className="section-index">01</span>
+              <span className="section-index">02</span>
             </div>
             <SectionLine />
           </motion.div>
@@ -93,26 +98,23 @@ export default function CouponsPage() {
               : `${coupons.filter(c => !c.used).length} waiting to be redeemed`}
           </motion.p>
 
-          {/* Filter pills — updated to Indigo Dream */}
+          {/* Filter pills */}
           {coupons.length > 0 && (
-            <motion.div
-              {...reveal(0.2)}
-              className="flex gap-2 mb-14"
-            >
+            <motion.div {...reveal(0.2)} className="flex gap-2 mb-14">
               {(['all', 'active', 'used'] as const).map(f => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
                   className="relative px-4 py-1.5 text-[12px] capitalize rounded-full transition-colors duration-300"
-                  style={{ color: filter === f ? 'rgba(176,143,232,0.90)' : 'var(--text-faint)' }}
+                  style={{ color: filter === f ? 'rgba(232,213,176,0.90)' : 'var(--text-faint)' }}
                 >
                   {filter === f && (
                     <motion.span
                       layoutId="filter-pill"
                       className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'rgba(176,143,232,0.09)',
-                        border: '1px solid rgba(176,143,232,0.20)',
+                        background: 'rgba(232,213,176,0.08)',
+                        border: '1px solid rgba(232,213,176,0.18)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                     />
@@ -135,8 +137,7 @@ export default function CouponsPage() {
           ) : (
             <motion.div
               layout
-              initial="hidden"
-              animate="visible"
+              initial="hidden" animate="visible"
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
             >
@@ -145,8 +146,8 @@ export default function CouponsPage() {
                   <motion.div
                     key={c.id} layout
                     variants={{
-                      hidden:   { opacity: 0, y: 20 },
-                      visible:  { opacity: 1, y: 0, transition: { duration: 0.45 } },
+                      hidden:  { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0, transition: { duration: 0.45 } },
                     }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="relative"
@@ -160,39 +161,31 @@ export default function CouponsPage() {
           )}
 
           {/* Add CTA */}
-          <motion.div
-            {...reveal(0.3)}
-            className="flex justify-center mt-16 mb-0"
-          >
+          <motion.div {...reveal(0.3)} className="flex justify-center mt-16 mb-0">
             <motion.button
               whileHover={{ scale: 1.04, y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setModal(true)}
               className="btn-ghost"
             >
-              <Plus size={13} /> Create a new coupon
+              <Plus size={13} /> Create a coupon for them
             </motion.button>
           </motion.div>
         </div>
       </main>
 
-      {/* Marquee before footer */}
-      <div className="relative z-10 mt-24">
-        <MarqueeStrip />
-      </div>
+      <div className="relative z-10 mt-24"><MarqueeStrip /></div>
 
-      {/* Footer */}
       <footer className="relative z-10 py-16 px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.4 }}
             className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
           >
             <p
               className="font-serif-light"
-              style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'rgba(230,235,255,0.30)' }}
+              style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'rgba(255,250,242,0.22)' }}
             >
               Every day with you is my favourite day.
             </p>

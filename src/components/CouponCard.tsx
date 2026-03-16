@@ -7,10 +7,7 @@ import confetti from 'canvas-confetti';
 
 function boom() {
   confetti({
-    particleCount: 90,
-    spread: 70,
-    origin: { y: 0.5 },
-    /* Obsidian Warm palette */
+    particleCount: 90, spread: 70, origin: { y: 0.5 },
     colors: ['#E8D5B0', '#C49A6C', '#f0e4cc', '#d4b48a', '#fff8ee'],
     zIndex: 9999,
   });
@@ -19,12 +16,14 @@ function boom() {
 export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpdate: () => void }) {
   const [busy, setBusy] = useState(false);
   const expired = isCouponExpired(coupon.deadline);
-  const used = coupon.used;
-  const dim = used || expired;
+  const used    = coupon.used;
+  const dim     = used || expired;
 
-  const redeem = () => {
+  const redeem = async () => {
     setBusy(true); boom();
-    setTimeout(() => { markCouponUsed(coupon.id); onUpdate(); setBusy(false); }, 700);
+    await markCouponUsed(coupon.id);
+    onUpdate();
+    setBusy(false);
   };
 
   return (
@@ -37,9 +36,9 @@ export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpd
     >
       {dim ? <div className="accent-bar-dim" /> : <div className="accent-bar" />}
 
-      {coupon.imageUrl && (
+      {coupon.image_url && (
         <div className="w-full h-36 overflow-hidden relative">
-          <img src={coupon.imageUrl} alt={coupon.name} className="w-full h-full object-cover opacity-70" style={{ transition: 'opacity 0.3s ease' }} />
+          <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover opacity-70" />
           <div className="absolute inset-x-0 bottom-0 h-8" style={{ background: 'linear-gradient(to top, var(--surface), transparent)' }} />
         </div>
       )}
@@ -47,7 +46,7 @@ export default function CouponCard({ coupon, onUpdate }: { coupon: Coupon; onUpd
       <div className="p-5 flex flex-col flex-1 relative z-10">
         <div className="flex items-center justify-between mb-3">
           <span className="label">Coupon</span>
-          {used && <span className="pill pill-green"><CheckCircle2 size={9} /> Redeemed</span>}
+          {used    && <span className="pill pill-green"><CheckCircle2 size={9} /> Redeemed</span>}
           {expired && !used && <span className="pill pill-amber"><Clock3 size={9} /> Expired</span>}
         </div>
 
