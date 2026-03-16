@@ -1,26 +1,15 @@
 'use client';
 
-const ITEMS = [
-  'our verse',
-  'since 18 nov 2024',
-  'made with love',
-  'just us two',
-  'infinite moments',
-  'our verse',
-  'since 18 nov 2024',
-  'made with love',
-  'just us two',
-  'infinite moments',
-];
+const ITEMS = ['Our Verse', 'made with love', 'just for you', 'always', 'forever', 'our little world'];
 
-export default function MarqueeStrip({ inverted = false }: { inverted?: boolean }) {
+export default function MarqueeStrip({ inverted }: { inverted?: boolean }) {
+  const repeated = [...ITEMS, ...ITEMS, ...ITEMS, ...ITEMS];
   return (
-    <div className="marquee-root" aria-hidden>
+    <div className="marquee-root">
       <div className={`marquee-track ${inverted ? 'marquee-reverse' : ''}`}>
-        {[...ITEMS, ...ITEMS].map((item, i) => (
+        {repeated.map((item, i) => (
           <span key={i} className="marquee-item">
-            {item}
-            <span className="marquee-dot">✦</span>
+            {item}<span className="marquee-dot">·</span>
           </span>
         ))}
       </div>

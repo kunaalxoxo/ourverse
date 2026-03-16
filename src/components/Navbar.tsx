@@ -7,10 +7,10 @@ import { getStoredUser, logout } from '@/lib/auth';
 import { Heart, LogOut, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
-  const router   = useRouter();
-  const pathname = usePathname();
-  const [user, setUser]       = useState<{ displayName: string } | null>(null);
-  const [open, setOpen]       = useState(false);
+  const router    = useRouter();
+  const pathname  = usePathname();
+  const [user, setUser]         = useState<{ displayName: string } | null>(null);
+  const [open, setOpen]         = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => { setUser(getStoredUser()); }, [pathname]);
@@ -31,56 +31,60 @@ export default function Navbar() {
     <motion.header
       initial={{ y: -52, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.45, ease: 'easeOut' }}
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass' : 'bg-transparent'
-      }`}
-      style={{ borderBottom: '1px solid var(--border)' }}
+      transition={{ duration: 0.40, ease: 'easeOut' }}
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        background: scrolled ? 'rgba(247,245,242,0.90)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(18px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(18px)' : 'none',
+        borderBottom: '1px solid var(--border)',
+        transition: 'background 0.3s ease',
+      }}
     >
-      <div className="max-w-3xl mx-auto px-6 h-[56px] flex items-center justify-between">
+      <div className="max-w-3xl mx-auto px-6 flex items-center justify-between" style={{ height: 56 }}>
 
         {/* Brand */}
-        <Link href="/home" className="flex items-center gap-2 group">
+        <Link href="/home" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
           <Heart size={12} style={{ color: 'var(--accent)', fill: 'var(--accent)' }} />
-          <span className="font-display text-[13px]" style={{ color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+          <span className="font-display" style={{ fontSize: 13, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
             Our Verse
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-0.5">
+        <nav className="hidden md:flex items-center" style={{ gap: 2 }}>
           {links.map(l => {
             const active = pathname === l.href;
             return (
-              <Link key={l.href} href={l.href}
-                className="relative px-4 py-1.5 text-[12px] rounded-full transition-colors duration-200"
-                style={{ color: active ? 'var(--text-primary)' : 'var(--text-faint)' }}
-              >
+              <Link key={l.href} href={l.href} style={{ textDecoration: 'none', position: 'relative', padding: '6px 16px', borderRadius: 999, fontSize: 12, color: active ? 'var(--text-primary)' : 'var(--text-faint)', transition: 'color 0.18s ease' }}>
                 {active && (
                   <motion.span layoutId="nav-pill"
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: 'var(--surface-hi)', border: '1px solid var(--border-hi)' }}
+                    style={{ position: 'absolute', inset: 0, borderRadius: 999, background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 1px 4px rgba(15,23,42,0.06)' }}
                     transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                   />
                 )}
-                <span className="relative z-10">{l.label}</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>{l.label}</span>
               </Link>
             );
           })}
-          <div className="w-px h-3 mx-2" style={{ background: 'var(--border)' }} />
-          <button onClick={() => { logout(); router.push('/'); }}
-            className="p-2 rounded-full transition-colors duration-200"
-            style={{ color: 'var(--text-faint)' }}
+          <div style={{ width: 1, height: 12, background: 'var(--border)', margin: '0 8px' }} />
+          <button
+            onClick={() => { logout(); router.push('/'); }}
+            title="Sign out"
+            style={{ padding: 8, borderRadius: 999, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', display: 'flex', alignItems: 'center', transition: 'color 0.18s ease' }}
             onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted)')}
             onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}
-            title="Sign out"
           >
             <LogOut size={12} />
           </button>
         </nav>
 
         {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className="md:hidden" style={{ color: 'var(--text-faint)' }}>
+        <button
+          onClick={() => setOpen(!open)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', display: 'flex' }}
+          className="md:hidden"
+        >
           {open ? <X size={16} /> : <Menu size={16} />}
         </button>
       </div>
@@ -90,20 +94,19 @@ export default function Navbar() {
         {open && (
           <motion.div
             initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="md:hidden overflow-hidden glass"
-            style={{ borderTop: '1px solid var(--border)' }}
+            transition={{ duration: 0.20 }}
+            className="md:hidden overflow-hidden"
+            style={{ background: 'rgba(247,245,242,0.96)', backdropFilter: 'blur(18px)', borderTop: '1px solid var(--border)' }}
           >
-            <div className="px-6 py-4 flex flex-col gap-1">
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 2 }}>
               {links.map(l => (
                 <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
-                  className="px-4 py-3 rounded-xl text-[13px] transition-colors duration-200"
-                  style={{ color: pathname === l.href ? 'var(--text-primary)' : 'var(--text-muted)' }}
+                  style={{ padding: '12px 16px', borderRadius: 10, fontSize: 13, textDecoration: 'none', color: pathname === l.href ? 'var(--text-primary)' : 'var(--text-muted)', background: pathname === l.href ? 'var(--surface)' : 'transparent', transition: 'color 0.18s ease' }}
                 >{l.label}</Link>
               ))}
-              <button onClick={() => { logout(); router.push('/'); }}
-                className="px-4 py-3 text-left text-[12px] mt-1"
-                style={{ color: 'var(--text-faint)' }}
+              <button
+                onClick={() => { logout(); router.push('/'); }}
+                style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)' }}
               >Sign out</button>
             </div>
           </motion.div>
