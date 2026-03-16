@@ -106,15 +106,12 @@ export default function HomePage() {
 
       {/* ─── HERO ───────────────────────────────────────────── */}
       <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-32 overflow-hidden">
-
         <motion.span
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.8 }}
           className="section-index"
           style={{ position: 'absolute', top: '88px', right: '24px' }}
-        >
-          01
-        </motion.span>
+        >01</motion.span>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -135,39 +132,22 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 60, rotateX: -40 }}
                   animate={{ opacity: 1, y: 0, rotateX: 0 }}
                   transition={{ delay: 0.4 + wi * 0.18 + ci * 0.055, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-                >
-                  {char}
-                </motion.span>
+                >{char}</motion.span>
               ))}
             </div>
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.8 }}
-          className="mt-14"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 0.8 }} className="mt-14">
           <RelationshipTimer />
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 1.35, duration: 0.8 }}
-          className="mt-8"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.35, duration: 0.8 }} className="mt-8">
           <AffirmationCarousel />
         </motion.div>
 
         <motion.div
-          animate={scrolled
-            ? { opacity: 0, y: 8, pointerEvents: 'none' }
-            : { y: [0, 6, 0], opacity: [0.25, 0.55, 0.25] }
-          }
-          transition={scrolled
-            ? { duration: 0.5, ease: 'easeOut' }
-            : { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }
-          }
+          animate={scrolled ? { opacity: 0, y: 8, pointerEvents: 'none' } : { y: [0, 6, 0], opacity: [0.25, 0.55, 0.25] }}
+          transition={scrolled ? { duration: 0.5, ease: 'easeOut' } : { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute bottom-10 flex flex-col items-center gap-2"
         >
           <span className="label" style={{ letterSpacing: '0.3em' }}>scroll</span>
@@ -175,7 +155,6 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ─── MARQUEE 1 ───────────────────────────────────────── */}
       <div className="relative z-10"><MarqueeStrip /></div>
 
       {/* ─── COUPONS ───────────────────────────────────────────── */}
@@ -201,7 +180,9 @@ export default function HomePage() {
               initial="hidden" whileInView="visible"
               viewport={{ once: true, margin: '-40px' }}
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-12"
+              /* centres cards when fewer than 3 fill the row */
+              className="grid gap-5 mt-12"
+              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}
             >
               {coupons.map((c, i) => (
                 <motion.div
@@ -228,7 +209,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── MARQUEE 2 ────────────────────────────────────────── */}
       <div className="relative z-10"><MarqueeStrip inverted /></div>
 
       {/* ─── CREATIONS ────────────────────────────────────────── */}
@@ -244,14 +224,11 @@ export default function HomePage() {
             </div>
             <SectionLine />
           </motion.div>
-
           <div className="flex flex-col gap-0 mt-12">
             {PROJECTS.map((proj, i) => (
               <motion.a
-                key={proj.url}
-                href={proj.url} target="_blank" rel="noopener noreferrer"
-                {...reveal(i * 0.12)}
-                className="project-row group"
+                key={proj.url} href={proj.url} target="_blank" rel="noopener noreferrer"
+                {...reveal(i * 0.12)} className="project-row group"
               >
                 <span className="project-row-index">{proj.index}</span>
                 <div className="project-row-body">
@@ -276,21 +253,16 @@ export default function HomePage() {
           <SectionLine />
           <motion.div
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.2 }}
+            viewport={{ once: true }} transition={{ duration: 1.2, delay: 0.2 }}
             className="pt-16 flex flex-col md:flex-row items-start md:items-end justify-between gap-10"
           >
             <div>
-              <p
-                className="font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.1] max-w-xs"
-                style={{ color: 'rgba(255,250,242,0.72)', letterSpacing: '-0.02em' }}
-              >
+              <p className="font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.1] max-w-xs"
+                style={{ color: 'rgba(255,250,242,0.72)', letterSpacing: '-0.02em' }}>
                 Some stories aren&apos;t written in books —
               </p>
-              <p
-                className="font-serif-light text-[clamp(22px,4vw,34px)] mt-2"
-                style={{ color: 'rgba(255,250,242,0.26)' }}
-              >
+              <p className="font-serif-light text-[clamp(22px,4vw,34px)] mt-2"
+                style={{ color: 'rgba(255,250,242,0.26)' }}>
                 they&apos;re written in moments together.
               </p>
             </div>

@@ -56,7 +56,6 @@ export default function CouponsPage() {
     filter === 'used' ? c.used : filter === 'active' ? !c.used : true
   );
 
-  /* Skeleton */
   if (!user || loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
       <motion.div
@@ -78,8 +77,6 @@ export default function CouponsPage() {
 
       <main className="relative z-10 pt-32 pb-0 px-6">
         <div className="max-w-3xl mx-auto">
-
-          {/* Page header */}
           <motion.div {...reveal()} className="mb-6">
             <div className="flex items-end justify-between mb-6">
               <div>
@@ -91,31 +88,24 @@ export default function CouponsPage() {
             <SectionLine />
           </motion.div>
 
-          {/* Sub-label */}
           <motion.p {...reveal(0.15)} className="mt-6 mb-12" style={{ fontSize: 13, color: 'var(--text-faint)' }}>
             {coupons.length === 0
               ? 'Nothing here yet — good things are coming.'
               : `${coupons.filter(c => !c.used).length} waiting to be redeemed`}
           </motion.p>
 
-          {/* Filter pills */}
           {coupons.length > 0 && (
             <motion.div {...reveal(0.2)} className="flex gap-2 mb-14">
               {(['all', 'active', 'used'] as const).map(f => (
                 <button
-                  key={f}
-                  onClick={() => setFilter(f)}
+                  key={f} onClick={() => setFilter(f)}
                   className="relative px-4 py-1.5 text-[12px] capitalize rounded-full transition-colors duration-300"
                   style={{ color: filter === f ? 'rgba(232,213,176,0.90)' : 'var(--text-faint)' }}
                 >
                   {filter === f && (
                     <motion.span
-                      layoutId="filter-pill"
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        background: 'rgba(232,213,176,0.08)',
-                        border: '1px solid rgba(232,213,176,0.18)',
-                      }}
+                      layoutId="filter-pill" className="absolute inset-0 rounded-full"
+                      style={{ background: 'rgba(232,213,176,0.08)', border: '1px solid rgba(232,213,176,0.18)' }}
                       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                     />
                   )}
@@ -125,30 +115,24 @@ export default function CouponsPage() {
             </motion.div>
           )}
 
-          {/* Grid */}
           {filtered.length === 0 ? (
-            <motion.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="py-20 text-center"
-              style={{ fontSize: 13, color: 'var(--text-faint)' }}
-            >
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 text-center"
+              style={{ fontSize: 13, color: 'var(--text-faint)' }}>
               Nothing to show here.
             </motion.p>
           ) : (
             <motion.div
-              layout
-              initial="hidden" animate="visible"
+              layout initial="hidden" animate="visible"
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+              /* auto-fill so single cards don’t stretch full-width */
+              className="grid gap-5"
+              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}
             >
               <AnimatePresence>
                 {filtered.map((c, i) => (
                   <motion.div
                     key={c.id} layout
-                    variants={{
-                      hidden:  { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 0.45 } },
-                    }}
+                    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45 } } }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="relative"
                   >
@@ -160,13 +144,10 @@ export default function CouponsPage() {
             </motion.div>
           )}
 
-          {/* Add CTA */}
           <motion.div {...reveal(0.3)} className="flex justify-center mt-16 mb-0">
             <motion.button
-              whileHover={{ scale: 1.04, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setModal(true)}
-              className="btn-ghost"
+              whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}
+              onClick={() => setModal(true)} className="btn-ghost"
             >
               <Plus size={13} /> Create a coupon for them
             </motion.button>
@@ -179,14 +160,11 @@ export default function CouponsPage() {
       <footer className="relative z-10 py-16 px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.4 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2, delay: 0.4 }}
             className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
           >
-            <p
-              className="font-serif-light"
-              style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'rgba(255,250,242,0.22)' }}
-            >
+            <p className="font-serif-light"
+              style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'rgba(255,250,242,0.22)' }}>
               Every day with you is my favourite day.
             </p>
             <div className="text-right">
