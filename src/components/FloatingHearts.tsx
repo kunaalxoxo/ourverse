@@ -1,14 +1,19 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function FloatingHearts() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+
   const hearts = Array.from({ length: 8 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     delay: Math.random() * 5,
     duration: 8 + Math.random() * 6,
     size: 10 + Math.random() * 14,
-    opacity: 0.1 + Math.random() * 0.2,
+    opacity: 0.10 + Math.random() * 0.15,
   }));
 
   return (
@@ -16,14 +21,15 @@ export default function FloatingHearts() {
       {hearts.map((h) => (
         <motion.div
           key={h.id}
-          className="absolute text-pink-400"
           style={{
+            position: 'absolute',
             left: `${h.x}%`,
-            bottom: '-50px',
-            fontSize: `${h.size}px`,
+            bottom: -50,
+            fontSize: h.size,
             opacity: h.opacity,
+            color: 'var(--accent)',
           }}
-          animate={{ y: [0, -window.innerHeight - 100], opacity: [h.opacity, 0] }}
+          animate={{ y: -(window.innerHeight + 100), opacity: 0 }}
           transition={{
             duration: h.duration,
             delay: h.delay,

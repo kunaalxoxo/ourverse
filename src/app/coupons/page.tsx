@@ -54,7 +54,7 @@ export default function CouponsPage() {
   if (!user || loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
       <motion.div animate={{ opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 1.8, repeat: Infinity }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(200,184,240,0.10)' }} />
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent-bg)' }} />
       </motion.div>
     </div>
   );
@@ -79,7 +79,9 @@ export default function CouponsPage() {
           </motion.div>
 
           <motion.p {...reveal(0.12)} className="mt-6 mb-10" style={{ fontSize: 13, color: 'var(--text-faint)' }}>
-            {coupons.length === 0 ? 'Nothing here yet — good things are coming.' : `${coupons.filter(c => !c.used).length} waiting to be redeemed`}
+            {coupons.length === 0
+              ? 'Nothing here yet — good things are coming.'
+              : `${coupons.filter(c => !c.used).length} waiting to be redeemed`}
           </motion.p>
 
           {coupons.length > 0 && (
@@ -87,11 +89,11 @@ export default function CouponsPage() {
               {(['all', 'active', 'used'] as const).map(f => (
                 <button key={f} onClick={() => setFilter(f)}
                   className="relative px-4 py-1.5 text-[12px] capitalize rounded-full transition-colors duration-200"
-                  style={{ color: filter === f ? 'rgba(200,184,240,0.92)' : 'var(--text-faint)' }}
+                  style={{ color: filter === f ? 'var(--text-primary)' : 'var(--text-faint)' }}
                 >
                   {filter === f && (
                     <motion.span layoutId="filter-pill" className="absolute inset-0 rounded-full"
-                      style={{ background: 'rgba(200,184,240,0.08)', border: '1px solid rgba(200,184,240,0.20)' }}
+                      style={{ background: 'var(--surface)', border: '1px solid var(--border-hi)', boxShadow: '0 1px 4px rgba(15,23,42,0.06)' }}
                       transition={{ type: 'spring', stiffness: 420, damping: 28 }}
                     />
                   )}
@@ -102,7 +104,9 @@ export default function CouponsPage() {
           )}
 
           {filtered.length === 0 ? (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 text-center" style={{ fontSize: 13, color: 'var(--text-faint)' }}>Nothing to show here.</motion.p>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 text-center" style={{ fontSize: 13, color: 'var(--text-faint)' }}>
+              Nothing to show here.
+            </motion.p>
           ) : (
             <motion.div
               layout initial="hidden" animate="visible"
@@ -137,11 +141,17 @@ export default function CouponsPage() {
 
       <footer className="relative z-10 py-14 px-6">
         <div className="max-w-3xl mx-auto">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.35 }} className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
-            <p className="font-serif-light" style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'rgba(242,240,255,0.22)' }}>Every day with you is my favourite day.</p>
-            <div className="text-right">
-              <p className="label mb-1">Our Verse</p>
-              <p className="label" style={{ color: 'var(--text-faint)' }}>{new Date().getFullYear()}</p>
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ duration: 0.9, delay: 0.35 }}
+            className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
+          >
+            <p className="font-serif-light" style={{ fontSize: 'clamp(18px, 3vw, 26px)', color: 'var(--text-muted)' }}>
+              Every day with you is my favourite day.
+            </p>
+            <div style={{ textAlign: 'right' }}>
+              <p className="label" style={{ marginBottom: 4 }}>Our Verse</p>
+              <p className="label">{new Date().getFullYear()}</p>
             </div>
           </motion.div>
         </div>
